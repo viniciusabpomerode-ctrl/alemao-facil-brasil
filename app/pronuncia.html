@@ -42,7 +42,10 @@
     <div style="text-align:center;color:var(--text-secondary);font-size:.9rem" id="translation-hint"></div>
 
     <button class="btn-rec" id="rec-btn">🎤 Gravar minha pronúncia</button>
-    <button class="btn btn-outline" id="play-orig-btn" style="width:100%">🔊 Ouvir pronúncia original</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline" id="play-orig-btn" style="flex:1">🔊 Ouvir original</button>
+      <button class="btn btn-primary" id="next-btn" style="flex:1">▶ Próxima</button>
+    </div>
 
     <div class="rec-panel" id="rec-panel">
       <p style="font-weight:600;margin:0 0 8px">🎧 Sua gravação:</p>
@@ -143,6 +146,9 @@ document.getElementById("rec-btn").addEventListener("click",async()=>{
     document.getElementById("rec-btn").classList.add("recording");
   }catch(e){alert("Permita o microfone!")}
 });
+
+// Próxima frase
+document.getElementById("next-btn").addEventListener("click",show);
 
 // Save
 document.getElementById("rec-save").addEventListener("click",async()=>{
