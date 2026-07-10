@@ -6,6 +6,7 @@ function renderNav(active) {
     { href: "cursos.html", label: "Cursos", key: "cursos" },
     { href: "musica.html", label: "Música", key: "musica" },
     { href: "escrita.html", label: "✍️ Escrita", key: "escrita" },
+    { href: "pronuncia.html", label: "🎤 Pronúncia", key: "pronuncia" },
     { href: "jogo.html", label: "Jogo", key: "jogo" },
     { href: "expressoes.html", label: "🗣️ Gírias", key: "expressoes" },
     { href: "profissoes.html", label: "💼 Profissões", key: "profissoes" },
