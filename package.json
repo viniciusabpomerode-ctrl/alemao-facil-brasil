@@ -1,0 +1,12 @@
+{
+  "name": "alemao-facil-brasil",
+  "version": "1.0.0",
+  "description": "Plataforma de aprendizado de alemão - diálogos, verbos, músicas e quizzes do A1 ao C2",
+  "private": true,
+  "scripts": {
+    "start": "python scripts/worker_r2.py & npx serve -p 8080",
+    "build": "echo 'Static site - no build needed'"
+  },
+  "keywords": ["alemão", "aprendizado", "idiomas", "goethe"],
+  "license": "UNLICENSED"
+}
