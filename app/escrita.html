@@ -204,13 +204,16 @@
     const progressInfo = document.getElementById("progress-info");
     const levelBtns = document.querySelectorAll(".level-btn");
 
+    const R2 = "https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
+
     // ── Cache de dados carregados ──
     const dataCache = {};
 
     async function loadSentences(level) {
       if (dataCache[level]) return dataCache[level];
       try {
-        const res = await fetch(`../data/escrita/${level}.json`, { cache: "no-cache" });
+        let res = await fetch(`${R2}data/escrita/${level}.json`).catch(() => null);
+        if (!res || !res.ok) res = await fetch(`../data/escrita/${level}.json`, { cache: "no-cache" });
         if (!res.ok) throw new Error("Não encontrado");
         const data = await res.json();
         dataCache[level] = data;
