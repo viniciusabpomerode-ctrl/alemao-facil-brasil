@@ -48,12 +48,13 @@
 <button class="filter-chip" data-f="profession">💼 Profissões</button>
 <button class="filter-chip" data-f="lyric">🎤 Letras</button>
 </div>
-<div class="filter-bar" id="time-filters" style="margin-bottom:20px;">
+<div class="filter-bar" id="time-filters" style="margin-bottom:20px;align-items:center;">
 <button class="filter-chip active" data-t="all">📅 Tudo</button>
 <button class="filter-chip" data-t="today">☀️ Hoje</button>
-<button class="filter-chip" data-t="week">📆 Esta semana</button>
-<button class="filter-chip" data-t="month">🗓️ Este mês</button>
-<button class="filter-chip" data-t="year">📅 Este ano</button>
+<button class="filter-chip" data-t="week">📆 7 dias</button>
+<button class="filter-chip" data-t="month">🗓️ 30 dias</button>
+<button class="filter-chip" data-t="year">📅 1 ano</button>
+<input type="date" id="date-pick" style="padding:6px 10px;border-radius:20px;border:1px solid var(--border-light);background:var(--bg-secondary);color:var(--text-primary);font-size:.8rem;font-family:inherit;margin-left:8px;" title="Filtrar por data específica">
 </div>
 <div id="content"><p class="empty-state"><span class="big">📝</span><br>Carregando...</p></div>
 </div>
@@ -117,19 +118,19 @@ async function render(){
     items=items.filter(i=>{
       const d=new Date(i.created_at);
       if(timeFilter==="today") return d>=today;
-      if(timeFilter==="week"){
-        const weekAgo=new Date(today.getTime()-7*86400000);
-        return d>=weekAgo;
-      }
-      if(timeFilter==="month"){
-        const monthAgo=new Date(today.getFullYear(),today.getMonth()-1,today.getDate());
-        return d>=monthAgo;
-      }
-      if(timeFilter==="year"){
-        const yearAgo=new Date(today.getFullYear()-1,today.getMonth(),today.getDate());
-        return d>=yearAgo;
-      }
+      if(timeFilter==="week") return d>=new Date(today.getTime()-7*86400000);
+      if(timeFilter==="month") return d>=new Date(today.getTime()-30*86400000);
+      if(timeFilter==="year") return d>=new Date(today.getFullYear()-1,today.getMonth(),today.getDate());
       return true;
+    });
+  }
+  // Date picker filter
+  const dp=document.getElementById("date-pick");
+  if(dp&&dp.value){
+    const pickDate=new Date(dp.value+"T00:00:00");
+    items=items.filter(i=>{
+      const d=new Date(i.created_at);
+      return d.getFullYear()===pickDate.getFullYear()&&d.getMonth()===pickDate.getMonth()&&d.getDate()===pickDate.getDate();
     });
   }
   if(query){const q=query.toLowerCase();items=items.filter(i=>(i.notes||"").toLowerCase().includes(q)||(i.title||"").toLowerCase().includes(q))}
@@ -145,7 +146,8 @@ async function editNotes(t,id,cur){const n=prompt("Anotações:",cur==="undefine
 async function review(t,id){await SavedItems.markReviewed(t,id);load()}
 async function del(t,id){if(confirm("Remover?")){await SavedItems.remove(t,id);load()}}
 document.getElementById("filters").addEventListener("click",e=>{if(e.target.classList.contains("filter-chip")){document.querySelectorAll("#filters .filter-chip").forEach(b=>b.classList.remove("active"));e.target.classList.add("active");filter=e.target.dataset.f;render()}});
-document.getElementById("time-filters").addEventListener("click",e=>{if(e.target.classList.contains("filter-chip")){document.querySelectorAll("#time-filters .filter-chip").forEach(b=>b.classList.remove("active"));e.target.classList.add("active");timeFilter=e.target.dataset.t;render()}});
+document.getElementById("time-filters").addEventListener("click",e=>{if(e.target.classList.contains("filter-chip")){document.querySelectorAll("#time-filters .filter-chip").forEach(b=>b.classList.remove("active"));e.target.classList.add("active");timeFilter=e.target.dataset.t;document.getElementById("date-pick").value="";render()}});
+document.getElementById("date-pick").addEventListener("change",()=>{document.querySelectorAll("#time-filters .filter-chip").forEach(b=>b.classList.remove("active"));timeFilter="all";render()});
 document.getElementById("search").addEventListener("input",e=>{query=e.target.value;render()});
 load();
 </script>
