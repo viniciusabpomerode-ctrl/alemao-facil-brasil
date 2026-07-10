@@ -57,31 +57,28 @@ const st={level:"A1",pool:[],sentence:null};
 
 async function buildPool(){
   const pool=[],lvs=st.level==="random"?["A1","A2","B1","B2","C1","C2"]:[st.level];
+  
+  // Usa AFBData.load (R2 + Supabase + local)
   for(const lv of lvs){
     try{
-      let r=await fetch(R2+"data/escrita/"+lv+".json");
-      if(!r.ok)r=await fetch("../data/escrita/"+lv+".json");
-      if(!r.ok)continue;
-      for(const s of await r.json())pool.push({german:s.german,portuguese:s.portuguese||I18n.field(s,'portuguese'),level:lv});
-    }catch(e){console.log("Erro escrita",lv,e)}
+      const data=await AFBData.load("escrita/"+lv);
+      for(const s of(Array.isArray(data)?data:[]))pool.push({german:s.german,portuguese:s.portuguese||I18n.field(s,'portuguese'),level:lv});
+    }catch(e){}
   }
-  // Girias
+  // Girias e Profissoes via fetch direto (AFBData.load tbm funciona)
   try{
-    let r=await fetch(R2+"data/girias.json");
-    if(!r.ok)r=await fetch("../data/girias.json");
-    if(r.ok){for(const e of(await r.json()).expressions||[]){if(lvs.includes(e.level))pool.push({german:e.german,portuguese:e.portuguese,level:e.level})}}
+    const g=await AFBData.load("girias");
+    for(const e of g.expressions||[]){if(lvs.includes(e.level))pool.push({german:e.german,portuguese:e.portuguese,level:e.level})}
   }catch(e){}
-  // Profissoes
   try{
-    let r=await fetch(R2+"data/profissoes.json");
-    if(!r.ok)r=await fetch("../data/profissoes.json");
-    if(r.ok){for(const e of(await r.json()).expressions||[]){for(const ph of e.phrases||[]){if(lvs.includes(ph.level))pool.push({german:ph.de,portuguese:ph.pt,level:ph.level})}}}
+    const p=await AFBData.load("profissoes");
+    for(const e of p.expressions||[]){for(const ph of e.phrases||[]){if(lvs.includes(ph.level))pool.push({german:ph.de,portuguese:ph.pt,level:ph.level})}}
   }catch(e){}
 
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
   st.pool=pool;
   document.getElementById("pool-count").textContent=pool.length.toLocaleString();
-  if(pool.length){document.getElementById("practice-area").style.display="";show()}else{document.getElementById("german-text").textContent="Erro ao carregar. Tente recarregar a página."}
+  if(pool.length){document.getElementById("practice-area").style.display="";show()}else{document.getElementById("german-text").textContent="Nenhuma frase. Tente outro nível."}
 }
 
 function show(){
