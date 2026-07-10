@@ -3,72 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alemão Fácil Brasil — Aprenda alemão de um jeito divertido</title>
+  <meta name="theme-color" content="#09090b">
+  <meta name="description" content="Seu ambiente noturno para estudar alemão com diálogos, podcasts, músicas e prática do A1 ao C2.">
+  <title>Alemão Fácil Brasil — Seu espaço para estudar alemão</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
   <header class="navbar">
-    <a class="brand" href="index.html"><span id="brand-icon">🛡️</span> Alemão Fácil Brasil</a>
-    <nav>
+    <a class="brand" href="index.html"><span id="brand-icon" aria-hidden="true">A</span> Alemão Fácil Brasil</a>
+    <nav aria-label="Navegação principal">
+      <a href="#ambientes">Ambientes</a>
+      <a href="#foco">Foco</a>
       <a href="app/planos.html">Planos</a>
       <a href="app/login.html">Entrar</a>
     </nav>
     <div class="nav-right">
-      <a class="btn btn-primary btn-sm" href="app/cadastro.html">Criar conta grátis</a>
+      <a class="btn btn-primary btn-sm" href="app/cadastro.html">Criar conta</a>
     </div>
   </header>
 
-  <section class="hero">
-    <h1>Aprenda Alemão de um jeito<br>divertido, no seu ritmo 🇩🇪</h1>
-    <p>Diálogos, podcasts, verbos conjugados, músicas com letra traduzida e um jogo de
-       vocabulário — tudo organizado do A1 ao C2, com sistema de XP e níveis pra você
-       ver seu progresso de verdade.</p>
-    <div class="actions">
-      <a class="btn btn-primary" href="app/cadastro.html">Começar agora, é grátis</a>
-      <a class="btn btn-outline" href="app/login.html">Já tenho conta</a>
-    </div>
-  </section>
+  <main>
+    <section class="workspace-hero" aria-labelledby="hero-title">
+      <div class="hero-inner">
+        <span class="eyebrow">Seu espaço de estudo · 22:00</span>
+        <h1 id="hero-title">Boa noite. Seu lugar favorito para estudar alemão.</h1>
+        <p>Uma atmosfera tranquila para aprender no seu ritmo — com aulas, histórias, música e prática reunidas em um só lugar.</p>
+        <div class="actions" style="justify-content:flex-start;margin-top:26px">
+          <a class="btn btn-primary" href="app/login.html">Continuar estudando</a>
+          <a class="btn btn-outline" href="app/cadastro.html">Começar grátis</a>
+        </div>
+        <div class="session-strip" aria-label="Sessão de foco atual">
+          <button class="session-play" id="ambient-play" type="button" aria-label="Iniciar som ambiente">▶</button>
+          <div class="session-meta">
+            <strong>Cafeteria em Berlim</strong>
+            <span id="ambient-status">Som ambiente pausado · sessão noturna</span>
+          </div>
+          <div class="session-tools">
+            <button type="button" data-minutes="25">25 min</button>
+            <button type="button" data-minutes="50">50 min</button>
+            <button type="button" onclick="location.href='app/login.html'">Abrir workspace</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <section class="container">
-    <div class="grid grid-4">
-      <div class="card center">
-        <div style="font-size:2.2rem;">💬</div>
-        <h3>Diálogos</h3>
-        <p class="muted">Situações reais do dia a dia, frase por frase, com tradução e pronúncia.</p>
+    <section class="workspace-section container" aria-labelledby="continue-title">
+      <div class="section-head">
+        <div><span class="eyebrow">Retome de onde parou</span><h2 id="continue-title">Continue estudando</h2></div>
+        <p>Pequenas sessões consistentes criam uma rotina que permanece.</p>
       </div>
-      <div class="card center">
-        <div style="font-size:2.2rem;">🎙️</div>
-        <h3>Podcasts</h3>
-        <p class="muted">Histórias de aventura, mistério e suspense pra praticar sua compreensão.</p>
-      </div>
-      <div class="card center">
-        <div style="font-size:2.2rem;">📖</div>
-        <h3>Verbos</h3>
-        <p class="muted">Conjugações completas em passado, presente e futuro.</p>
-      </div>
-      <div class="card center">
-        <div style="font-size:2.2rem;">🎵</div>
-        <h3>Músicas</h3>
-        <p class="muted">Letras traduzidas pra aprender alemão cantando.</p>
-      </div>
-    </div>
+      <article class="card continue-card">
+        <div class="continue-cover" role="img" aria-label="Mesa de estudos em uma cafeteria alemã à noite"></div>
+        <div class="continue-body">
+          <span class="badge">A1 · Diálogo 04</span>
+          <h3>Ein Abend im Café</h3>
+          <p class="muted">Pratique pedidos, cumprimentos e expressões naturais em uma cafeteria.</p>
+          <div class="progress-line" aria-label="62% concluído"><span></span></div>
+          <a class="btn btn-primary" href="app/dialogo.html">Retomar diálogo</a>
+        </div>
+      </article>
+    </section>
 
-    <div class="card" style="margin-top:40px; display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
-      <div style="font-size:3rem;">🏆</div>
-      <div>
-        <h3 style="margin:0 0 6px;">Sistema de XP e Níveis (A1 → C2)</h3>
-        <p class="muted" style="margin:0;">A cada diálogo, podcast, verbo ou música que você completa, ganha XP e sobe de nível — do Gato Maroto (A1) até a Águia do Conhecimento (C2).</p>
+    <section class="workspace-section container" id="ambientes" aria-labelledby="ambientes-title">
+      <div class="section-head">
+        <div><span class="eyebrow">Escolha a atmosfera</span><h2 id="ambientes-title">Ambientes para cada ritmo</h2></div>
+        <p>Entre em um cenário, reduza o ruído ao redor e mantenha a atenção no alemão.</p>
       </div>
-    </div>
-  </section>
+      <div class="environment-grid">
+        <article class="environment-card wide env-library" tabindex="0"><div class="environment-copy"><strong>Biblioteca silenciosa</strong><span>Leitura profunda · ruído baixo</span></div></article>
+        <article class="environment-card wide env-rain" tabindex="0"><div class="environment-copy"><strong>Chuva na janela</strong><span>Foco suave · noite longa</span></div></article>
+        <article class="environment-card env-cafe" tabindex="0"><div class="environment-copy"><strong>Café em Berlim</strong><span>Conversação · ambiente quente</span></div></article>
+        <article class="environment-card env-ice" tabindex="0"><div class="environment-copy"><strong>ICE noturno</strong><span>Vocabulário em movimento</span></div></article>
+        <article class="environment-card env-forest" tabindex="0"><div class="environment-copy"><strong>Floresta Negra</strong><span>Imersão · sons da natureza</span></div></article>
+      </div>
+    </section>
 
-  <footer class="footer">
-    <p>Alemão Fácil Brasil © 2026 — feito com 💙 para quem quer aprender alemão de verdade.</p>
-  </footer>
+    <section class="workspace-section container" id="foco" aria-labelledby="foco-title">
+      <div class="section-head">
+        <div><span class="eyebrow">Sessão de agora</span><h2 id="foco-title">Som, tempo e intenção</h2></div>
+      </div>
+      <div class="focus-grid">
+        <article class="card focus-panel">
+          <div><span class="badge">Lo-fi para concentração</span><h3 style="font-size:1.7rem;margin:14px 0 4px">Späte Stunden</h3><p class="muted">Alemão Fácil Radio · ambiente instrumental</p></div>
+          <div class="player-wave" aria-hidden="true"><i style="--h:28%"></i><i style="--h:60%"></i><i style="--h:44%"></i><i style="--h:80%"></i><i style="--h:52%"></i><i style="--h:90%"></i><i style="--h:38%"></i><i style="--h:68%"></i><i style="--h:46%"></i><i style="--h:76%"></i><i style="--h:32%"></i><i style="--h:58%"></i><i style="--h:86%"></i><i style="--h:42%"></i><i style="--h:64%"></i></div>
+          <a class="btn btn-outline" href="app/musica.html">Explorar músicas</a>
+        </article>
+        <article class="card center">
+          <span class="eyebrow">Pomodoro</span>
+          <div class="pomo-ring"><span id="home-pomo-time">25:00</span></div>
+          <button class="btn btn-primary" id="home-pomo-start" type="button">Iniciar foco</button>
+        </article>
+      </div>
+    </section>
 
+    <section class="workspace-section container" aria-labelledby="missions-title">
+      <div class="section-head"><div><span class="eyebrow">Um passo de cada vez</span><h2 id="missions-title">Missões para hoje</h2></div></div>
+      <div class="mission-list">
+        <a class="mission" href="app/quiz.html"><span class="mission-dot">1</span><div><strong>Responder um quiz rápido</strong><span>5 perguntas · aproximadamente 3 minutos</span></div></a>
+        <a class="mission" href="app/podcast.html"><span class="mission-dot">2</span><div><strong>Ouvir uma história curta</strong><span>Compreensão auditiva · nível A1</span></div></a>
+        <a class="mission" href="app/escrita.html"><span class="mission-dot">3</span><div><strong>Escrever três frases</strong><span>Prática livre com orientação</span></div></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><p>Alemão Fácil Brasil © 2026 — um espaço tranquilo para aprender de verdade.</p></footer>
   <script src="assets/js/theme.js"></script>
   <script>
-    document.getElementById("brand-icon").textContent = Theme.get() === "vikings" ? "🛡️" : "🦋";
+    document.getElementById("brand-icon").textContent = Theme.get() === "vikings" ? "A" : "G";
+    const play = document.getElementById("ambient-play");
+    const status = document.getElementById("ambient-status");
+    let ambientOn = false;
+    play.addEventListener("click", () => {
+      ambientOn = !ambientOn;
+      play.textContent = ambientOn ? "Ⅱ" : "▶";
+      play.setAttribute("aria-label", ambientOn ? "Pausar som ambiente" : "Iniciar som ambiente");
+      status.textContent = ambientOn ? "Som ambiente ativo · sessão noturna" : "Som ambiente pausado · sessão noturna";
+    });
+    let seconds = 25 * 60;
+    let timer = null;
+    const time = document.getElementById("home-pomo-time");
+    const start = document.getElementById("home-pomo-start");
+    function drawTime() { time.textContent = String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0"); }
+    document.querySelectorAll("[data-minutes]").forEach(button => button.addEventListener("click", () => { clearInterval(timer); timer = null; seconds = Number(button.dataset.minutes) * 60; start.textContent = "Iniciar foco"; drawTime(); document.getElementById("foco").scrollIntoView({ behavior: "smooth" }); }));
+    start.addEventListener("click", () => { if (timer) { clearInterval(timer); timer = null; start.textContent = "Continuar foco"; return; } start.textContent = "Pausar"; timer = setInterval(() => { if (seconds > 0) { seconds--; drawTime(); } else { clearInterval(timer); timer = null; start.textContent = "Recomeçar"; } }, 1000); });
   </script>
 </body>
 </html>
