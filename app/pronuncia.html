@@ -69,8 +69,6 @@
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/js/auth.js"></script>
 <script src="../assets/js/nav.js"></script>
-<script src="../assets/js/i18n.js"></script>
-<script src="../assets/js/data.js"></script>
 <script src="../assets/js/saved_r2.js"></script>
 <script>
 Auth.requireLogin();renderNav("pronuncia");
@@ -166,18 +164,22 @@ window.addEventListener("beforeunload",()=>{if(recordedBlob&&st.sentence){const 
 
 // Render recordings
 async function renderRecs(){
-  // Clean old (>24h unsaved)
-  const db=await openDB();const tx=db.transaction("recs","readwrite");const all=await new Promise(r=>{const req=tx.objectStore("recs").getAll();req.onsuccess=()=>r(req.result)});
-  const now=Date.now();
-  for(const r of all){if(now-r.ts>86400000&&!r.saved)tx.objectStore("recs").delete(r.id)}
+  try{
+    const db=await openDB();
+    const all=await new Promise((r,rej)=>{const tx=db.transaction("recs","readonly");const req=tx.objectStore("recs").getAll();req.onsuccess=()=>r(req.result);req.onerror=rej});
+    
+    // Clean old unsaved (>24h)
+    const now=Date.now();
+    for(const rec of all){if(now-rec.ts>86400000&&!rec.saved){try{const tx2=db.transaction("recs","readwrite");tx2.objectStore("recs").delete(rec.id)}catch(e){}}}
+    
+    let recs=all.filter(r=>now-r.ts<=86400000||r.saved);
+    recs.sort((a,b)=>b.ts-a.ts);
+    if(recFilter!=="all"){recs=recs.filter(r=>{if(recFilter==="today")return now-r.ts<86400000;if(recFilter==="week")return now-r.ts<7*86400000;if(recFilter==="month")return now-r.ts<30*86400000;return true})}
 
-  let recs=all.filter(r=>now-r.ts<=86400000||r.saved);
-  recs.sort((a,b)=>b.ts-a.ts);
-  if(recFilter!=="all"){recs=recs.filter(r=>{if(recFilter==="today")return now-r.ts<86400000;if(recFilter==="week")return now-r.ts<7*86400000;if(recFilter==="month")return now-r.ts<30*86400000;return true})}
-
-  const el=document.getElementById("recordings-list");
-  if(!recs.length){el.innerHTML='<div class="empty-state">Nenhuma gravação</div>';return}
-  el.innerHTML=recs.map(r=>`<div class="rec-item"><div class="info"><div class="text">${(r.text||"").substring(0,70)}</div><div class="date">${new Date(r.ts).toLocaleString("pt-BR")} ${r.saved?"💾":"⏳24h"}</div></div><div style="display:flex;gap:6px"><button class="btn btn-sm" onclick="playRec('${r.id}')">▶</button><button class="btn btn-sm" style="color:#f44" onclick="delRec('${r.id}');renderRecs()">🗑️</button></div></div>`).join("");
+    const el=document.getElementById("recordings-list");
+    if(!recs.length){el.innerHTML='<div class="empty-state">Nenhuma gravação</div>';return}
+    el.innerHTML=recs.map(r=>`<div class="rec-item"><div class="info"><div class="text">${(r.text||"").substring(0,70)}</div><div class="date">${new Date(r.ts).toLocaleString("pt-BR")} ${r.saved?"💾":"⏳24h"}</div></div><div style="display:flex;gap:6px"><button class="btn btn-sm" onclick="playRec('${r.id}')">▶</button><button class="btn btn-sm" style="color:#f44" onclick="delRec('${r.id}');renderRecs()">🗑️</button></div></div>`).join("");
+  }catch(e){document.getElementById("recordings-list").innerHTML='<div class="empty-state">Erro ao carregar</div>'}
 }
 
 async function playRec(id){const recs=await getAllRecs();const r=recs.find(x=>x.id===id);if(!r||!r.base64)return;const b=await fetch("data:audio/webm;base64,"+r.base64).then(x=>x.blob());document.getElementById("rec-playback").src=URL.createObjectURL(b);document.getElementById("rec-panel").classList.add("show")}
