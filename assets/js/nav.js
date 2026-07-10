@@ -8,6 +8,7 @@ function renderNav(active) {
     { href: "escrita.html", label: "✍️ Escrita", key: "escrita" },
     { href: "jogo.html", label: "Jogo", key: "jogo" },
     { href: "expressoes.html", label: "🗣️ Gírias", key: "expressoes" },
+    { href: "profissoes.html", label: "💼 Profissões", key: "profissoes" },
     { href: "simulado.html", label: "📝 Simulado", key: "simulado" },
     { href: "quiz.html", label: "⚡ Quiz", key: "quiz" },
     { href: "caderno.html", label: "📝 Caderno", key: "caderno" },
