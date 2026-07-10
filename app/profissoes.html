@@ -245,11 +245,12 @@
         return `<h4 style="margin:16px 0 8px;color:${levelColor(lv)}">${lv}</h4>` +
           frases.map((f, fi) => `
             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;margin:4px 0;background:var(--bg-secondary);border-radius:8px;gap:8px;">
-              <div>
+              <div style="flex:1">
                 <div class="phrase-de">${f.de}</div>
                 <div class="phrase-pt">${f.pt}</div>
               </div>
               <div style="display:flex;align-items:center;gap:6px;">
+                ${f.audio_url ? `<button class="btn-audio-sm" onclick="event.stopPropagation();playAudio('${f.audio_url}')" title="Ouvir">▶</button>` : ''}
                 <span class="prof-phrase-save-${idx}_${lv}_${fi}"></span>
               </div>
             </div>
