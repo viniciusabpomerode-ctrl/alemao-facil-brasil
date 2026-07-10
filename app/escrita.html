@@ -147,7 +147,10 @@
 <div id="app-nav"></div>
 <div class="container" style="padding-top:28px; max-width:720px;">
   <h2>✍️ Escrita &amp; Pronúncia</h2>
-  <p class="muted">Pratique escrita e fala com frases reais de todo o conteúdo. <strong id="pool-count">...</strong> frases disponíveis.</p>
+  <div class="level-select" style="margin-bottom:16px;">
+    <button class="level-btn active" data-tab="escrita">✍️ Escrita</button>
+    <button class="level-btn" data-tab="pronuncia">🎤 Pronúncia</button>
+  </div>
 
   <div class="escrita-header" style="gap:6px;">
     <div class="level-select" id="level-filters">
@@ -173,8 +176,10 @@
       <span class="source-tag" id="source-tag"></span>
     </div>
 
-    <div class="input-area">
-      <textarea id="user-input" placeholder="Digite a frase em alemão aqui..."></textarea>
+    <div id="input-row">
+      <div class="input-area">
+        <textarea id="user-input" placeholder="Digite a frase em alemão aqui..."></textarea>
+      </div>
     </div>
 
     <div class="translation-box hidden" id="translation-box">
@@ -185,17 +190,19 @@
       <div class="translation-text" id="translation-text"></div>
     </div>
 
-    <div class="actions-bar">
+    <div class="actions-bar" id="check-row">
       <button class="btn btn-outline" id="check-btn">✅ Verificar</button>
       <button class="btn btn-primary" id="next-btn">▶ Próxima</button>
     </div>
 
-    <button class="btn-rec" id="rec-btn" style="width:100%;margin-top:8px;">🎤 Gravar pronúncia</button>
-    <div class="recording-panel" id="rec-panel">
-      <audio id="rec-playback" controls style="width:100%;margin-bottom:8px;"></audio>
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-primary btn-sm" id="rec-save">💾 Salvar</button>
-        <button class="btn btn-sm" id="rec-delete" style="color:#f44;">🗑️ Descartar</button>
+    <div id="rec-row" style="display:none;">
+      <button class="btn-rec" id="rec-btn" style="width:100%;">🎤 Gravar pronúncia</button>
+      <div class="recording-panel" id="rec-panel">
+        <audio id="rec-playback" controls style="width:100%;margin-bottom:8px;"></audio>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" id="rec-save">💾 Salvar</button>
+          <button class="btn btn-sm" id="rec-delete" style="color:#f44;">🗑️ Descartar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -223,9 +230,19 @@
 Auth.requireLogin();renderNav("escrita");
 
 const R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
-const st={level:"all",type:"all",sentence:null,pool:[]};
+const st={level:"all",type:"all",sentence:null,pool:[],tab:"escrita"};
 let recFilter="all",mediaRecorder=null,recordedChunks=[],recordedBlob=null;
 const origAudio=new Audio();
+
+// Tab switching
+function switchTab(tab){
+  st.tab=tab;
+  document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  document.getElementById("input-row").style.display=tab==="escrita"?"":"none";
+  document.getElementById("check-row").style.display=tab==="escrita"?"":"none";
+  document.getElementById("rec-row").style.display=tab==="pronuncia"?"":"none";
+  document.getElementById("tab-label").textContent=tab==="escrita"?"Digite a frase em alemão":"Ouça e grave sua pronúncia";
+}
 
 // IndexedDB for recordings (24h TTL unsaved)
 function openDB(){return new Promise((r,rej)=>{const req=indexedDB.open("afb_recs",1);req.onupgradeneeded=e=>{e.target.result.createObjectStore("recs",{keyPath:"id"})};req.onsuccess=()=>r(req.result);req.onerror=rej})}
@@ -328,9 +345,11 @@ async function renderRecs(){
 
 async function playRec(id){const recs=await getAllRecs();const r=recs.find(x=>x.id===id);if(!r||!r.base64)return;const b=await fetch("data:audio/webm;base64,"+r.base64).then(x=>x.blob());document.getElementById("rec-playback").src=URL.createObjectURL(b);document.getElementById("rec-panel").classList.add("show")}
 
-document.getElementById("level-filters").addEventListener("click",e=>{if(e.target.classList.contains("level-btn")){document.querySelectorAll("#level-filters .level-btn").forEach(c=>c.classList.remove("active"));e.target.classList.add("active");st.level=e.target.dataset.l;buildPool()}});
+document.querySelector(".level-select").addEventListener("click",e=>{if(e.target.classList.contains("level-btn")&&e.target.dataset.l){document.querySelectorAll(".level-select .level-btn[data-l]").forEach(c=>c.classList.remove("active"));e.target.classList.add("active");st.level=e.target.dataset.l;buildPool()}});
 document.getElementById("type-filters").addEventListener("click",e=>{if(e.target.classList.contains("level-btn")){document.querySelectorAll("#type-filters .level-btn").forEach(c=>c.classList.remove("active"));e.target.classList.add("active");st.type=e.target.dataset.t;buildPool()}});
 document.getElementById("rec-time-filters").addEventListener("click",e=>{if(e.target.classList.contains("level-btn")){document.querySelectorAll("#rec-time-filters .level-btn").forEach(c=>c.classList.remove("active"));e.target.classList.add("active");recFilter=e.target.dataset.rt;renderRecs()}});
+// Tab switching
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));
 
 window.addEventListener("beforeunload",()=>{if(recordedBlob&&st.sentence){const id="rec_"+Date.now(),reader=new FileReader();reader.onload=()=>putRec({id,text:st.sentence.german,translation:st.sentence.portuguese,ts:Date.now(),saved:false,base64:reader.result.split(",")[1]});reader.readAsDataURL(recordedBlob)}});
 
