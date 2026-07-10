@@ -9,6 +9,7 @@
 
 const AFB_USERS_KEY = "afb_users";
 const AFB_SESSION_KEY = "afb_session";
+const AFB_BASE = location.pathname.includes("/alemao-facil-brasil/") || location.pathname.startsWith("/alemao-facil-brasil") ? "/alemao-facil-brasil" : "";
 
 async function afbHash(text) {
   const enc = new TextEncoder().encode(text);
@@ -81,7 +82,7 @@ const Auth = {
 
   logout() {
     localStorage.removeItem(AFB_SESSION_KEY);
-    window.location.href = "/index.html";
+    window.location.href = AFB_BASE + "/index.html";
   },
 
   currentUser() {
@@ -102,13 +103,13 @@ const Auth = {
 
   requireLogin() {
     if (!Auth.currentUser()) {
-      window.location.href = "/app/login.html";
+      window.location.href = AFB_BASE + "/app/login.html";
     }
   },
 
   redirectIfLoggedIn() {
     if (Auth.currentUser()) {
-      window.location.href = "/app/dashboard.html";
+      window.location.href = AFB_BASE + "/app/dashboard.html";
     }
   },
 };
