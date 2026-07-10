@@ -1,0 +1,122 @@
+// ============================================================
+// Sistema de XP e niveis — portado de lib/models/xp_system.dart
+// (mesmas faixas de XP e nomes de "criaturas" do app original)
+// ============================================================
+
+const XP_LEVELS = {
+  A1: { name: "A1 - Iniciante", minXP: 0, maxXP: 499, icon: "🐱", creature: "Gato Maroto", color: "--level-a1" },
+  A2: { name: "A2 - Elementar", minXP: 500, maxXP: 999, icon: "🦊", creature: "Raposa do Submundo", color: "--level-a2" },
+  B1: { name: "B1 - Intermediário", minXP: 1000, maxXP: 1499, icon: "🔮", creature: "Ser Místico", color: "--level-b1" },
+  B2: { name: "B2 - Intermediário Experiente", minXP: 1500, maxXP: 1999, icon: "🦉", creature: "Coruja em Extinção", color: "--level-b2" },
+  C1: { name: "C1 - Avançado", minXP: 2000, maxXP: 2499, icon: "🐱", creature: "Gato de Asas", color: "--level-c1" },
+  C2: { name: "C2 - Proficiente", minXP: 2500, maxXP: 999999, icon: "🦅", creature: "Águia do Conhecimento", color: "--level-c2" },
+};
+const LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"];
+
+const ACTIVITY_REWARDS = {
+  dialog_sentence: 5,
+  dialog_completed: 15,
+  podcast_completed: 25,
+  verb_studied: 10,
+  music_track: 20,
+  daily_streak: 10,
+};
+
+const XPSystem = {
+  getCurrentLevel(xp) {
+    for (let i = LEVEL_ORDER.length - 1; i >= 0; i--) {
+      const code = LEVEL_ORDER[i];
+      if (xp >= XP_LEVELS[code].minXP) return code;
+    }
+    return "A1";
+  },
+  getNextLevel(level) {
+    const idx = LEVEL_ORDER.indexOf(level);
+    if (idx === -1 || idx === LEVEL_ORDER.length - 1) return level;
+    return LEVEL_ORDER[idx + 1];
+  },
+  getProgressToNextLevel(xp) {
+    const level = XPSystem.getCurrentLevel(xp);
+    if (level === "C2") return 1;
+    const next = XPSystem.getNextLevel(level);
+    const cur = XP_LEVELS[level];
+    const nxt = XP_LEVELS[next];
+    return (xp - cur.minXP) / (nxt.minXP - cur.minXP);
+  },
+  getXPToNextLevel(xp) {
+    const level = XPSystem.getCurrentLevel(xp);
+    if (level === "C2") return 0;
+    const next = XPSystem.getNextLevel(level);
+    return XP_LEVELS[next].minXP - xp;
+  },
+  canAccessLevel(xp, level) {
+    return xp >= XP_LEVELS[level].minXP;
+  },
+};
+
+// ---------------- Progresso do usuario (por conta) ----------------
+
+function afbProgressKey(email) {
+  return `afb_progress_${email}`;
+}
+
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+const Progress = {
+  load() {
+    const user = Auth.currentUser();
+    if (!user) return { xp: 0, completed: [], streak: 0, lastActivity: null };
+    try {
+      const raw = localStorage.getItem(afbProgressKey(user.email));
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return { xp: 0, completed: [], streak: 0, lastActivity: null };
+  },
+
+  save(progress) {
+    const user = Auth.currentUser();
+    if (!user) return;
+    localStorage.setItem(afbProgressKey(user.email), JSON.stringify(progress));
+  },
+
+  // Registra a conclusao de um item (dialogo/podcast/verbo/musica) e da XP
+  // uma unica vez por itemKey (ex: "dialog-9"). Retorna {xpGained, leveledUp}
+  complete(itemKey, xpAmount) {
+    const progress = Progress.load();
+    if (progress.completed.includes(itemKey)) {
+      return { xpGained: 0, leveledUp: false, alreadyDone: true };
+    }
+    const oldLevel = XPSystem.getCurrentLevel(progress.xp);
+    progress.completed.push(itemKey);
+    progress.xp += xpAmount;
+    Progress.bumpStreak(progress);
+    const newLevel = XPSystem.getCurrentLevel(progress.xp);
+    Progress.save(progress);
+    return { xpGained: xpAmount, leveledUp: newLevel !== oldLevel, newLevel, alreadyDone: false };
+  },
+
+  // XP repetivel, sem chave unica (usado pelo jogo, que pode ser jogado varias vezes)
+  addXP(xpAmount) {
+    const progress = Progress.load();
+    const oldLevel = XPSystem.getCurrentLevel(progress.xp);
+    progress.xp += xpAmount;
+    Progress.bumpStreak(progress);
+    const newLevel = XPSystem.getCurrentLevel(progress.xp);
+    Progress.save(progress);
+    return { leveledUp: newLevel !== oldLevel, newLevel };
+  },
+
+  bumpStreak(progress) {
+    const today = todayStr();
+    if (progress.lastActivity === today) return;
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    progress.streak = progress.lastActivity === yesterday ? (progress.streak || 0) + 1 : 1;
+    progress.lastActivity = today;
+  },
+
+  isCompleted(itemKey) {
+    return Progress.load().completed.includes(itemKey);
+  },
+};

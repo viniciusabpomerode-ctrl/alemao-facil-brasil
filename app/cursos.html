@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursos — Alemão Fácil Brasil</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div id="app-nav"></div>
+
+  <div class="container" style="padding-top:28px;">
+    <h2 class="mt-0">Cursos</h2>
+    <p class="muted">Escolha um nível para ver diálogos, podcasts e verbos.</p>
+
+    <div class="grid grid-4" id="level-tabs" style="gap:12px;"></div>
+
+    <div class="tabs" style="margin-top:28px;">
+      <button class="tab-btn active" data-tab="dialogos">💬 Diálogos</button>
+      <button class="tab-btn" data-tab="podcasts">🎙️ Podcasts</button>
+      <button class="tab-btn" data-tab="verbos">📖 Verbos</button>
+    </div>
+
+    <div id="tab-content"><p class="muted center" style="padding:40px 0;">Carregando...</p></div>
+  </div>
+
+  <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/xp.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script src="../assets/js/i18n.js"></script>
+  <script src="../assets/js/data.js"></script>
+  <script>
+    Auth.requireLogin();
+    renderNav("cursos");
+
+    const params = new URLSearchParams(location.search);
+    let currentLevel = params.get("nivel") || "A1";
+    let currentTab = "dialogos";
+    let levelData = null;   // { dialog_themes, podcasts } do nivel atual
+    let verbsData = null;   // verbos do nivel atual (carregado so quando precisa)
+    const progress = Progress.load();
+
+    function renderLevelTabs() {
+      const wrap = document.getElementById("level-tabs");
+      wrap.innerHTML = LEVEL_ORDER.map((code) => {
+        const info = XP_LEVELS[code];
+        const unlocked = XPSystem.canAccessLevel(progress.xp, code);
+        return `
+          <div class="level-tab ${code === currentLevel ? "active-level" : ""} ${unlocked ? "" : "locked"}"
+               style="background:var(${info.color})"
+               onclick="selectLevel('${code}')">
+            ${info.icon} ${code}
+            ${unlocked ? "" : '<div style="font-size:.7rem;">🔒 ' + info.minXP + ' XP</div>'}
+          </div>`;
+      }).join("");
+    }
+
+    async function selectLevel(code) {
+      currentLevel = code;
+      history.replaceState(null, "", `?nivel=${code}`);
+      renderLevelTabs();
+      levelData = null;
+      verbsData = null;
+      await loadAndRender();
+    }
+
+    function selectTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+      loadAndRender();
+    }
+
+    document.querySelectorAll(".tab-btn").forEach((b) => b.addEventListener("click", () => selectTab(b.dataset.tab)));
+
+    function emptyMsg() {
+      return `<p class="muted center" style="padding:40px 0;">Conteúdo deste nível chegando em breve 🚧</p>`;
+    }
+
+    async function loadAndRender() {
+      const el = document.getElementById("tab-content");
+      el.innerHTML = `<p class="muted center" style="padding:40px 0;">Carregando...</p>`;
+
+      if (currentTab === "verbos") {
+        if (!verbsData) verbsData = await AFBData.verbos(currentLevel);
+        if (!verbsData.length) { el.innerHTML = emptyMsg(); return; }
+        el.innerHTML = `<div class="grid grid-4">${verbsData.map((v) => `
+          <a class="card card-sm center" href="verbo.html?id=${v.id}&nivel=${currentLevel}">
+            <b style="font-size:1.1rem;">${v.base_verb}</b>
+            <p class="muted" style="margin:4px 0; font-size:.85rem;">${I18n.field(v, 'portuguese_translation')}</p>
+            ${progress.completed.includes("verb-" + v.id) ? '<span class="badge">✅</span>' : `<span class="xp-pill">+${v.xp_reward} XP</span>`}
+          </a>`).join("")}</div>`;
+        return;
+      }
+
+      if (!levelData) levelData = await AFBData.nivel(currentLevel);
+
+      if (currentTab === "dialogos") {
+        const themes = levelData.dialog_themes || [];
+        if (!themes.length) { el.innerHTML = emptyMsg(); return; }
+        el.innerHTML = themes.map((th) => `
+          <h4 style="margin:20px 0 8px;">${I18n.field(th, 'title')}</h4>
+          <p class="muted" style="margin:0 0 10px; font-size:.88rem;">${I18n.field(th, 'description') || ""}</p>
+          <div class="grid grid-3">
+            ${th.dialogs.map((d) => `
+              <a class="card card-sm" href="dialogo.html?id=${d.id}&nivel=${currentLevel}">
+                <div class="flex-between">
+                  <b>${I18n.field(d, 'title')}</b>
+                  ${progress.completed.includes("dialog-" + d.id) ? '<span class="badge">✅</span>' : `<span class="xp-pill">+${d.xp_reward} XP</span>`}
+                </div>
+                <p class="muted" style="font-size:.85rem; margin:6px 0 0;">${I18n.field(d, 'description') || ""}</p>
+              </a>`).join("")}
+          </div>
+        `).join("");
+      } else {
+        const podcasts = levelData.podcasts || [];
+        if (!podcasts.length) { el.innerHTML = emptyMsg(); return; }
+        const byCategory = {};
+        podcasts.forEach((p) => { (byCategory[p.category] = byCategory[p.category] || []).push(p); });
+        el.innerHTML = Object.entries(byCategory).map(([cat, list]) => `
+          <h4 style="margin:20px 0 8px;">${cat}</h4>
+          <div class="grid grid-3">
+            ${list.map((p) => `
+              <a class="card card-sm" href="podcast.html?id=${p.id}&nivel=${currentLevel}">
+                <div class="flex-between">
+                  <b>${I18n.field(p, 'title')}</b>
+                  ${progress.completed.includes("podcast-" + p.id) ? '<span class="badge">✅</span>' : `<span class="xp-pill">+${p.xp_reward} XP</span>`}
+                </div>
+                <p class="muted" style="font-size:.85rem; margin:6px 0 0;">${I18n.field(p, 'description') || ""}</p>
+              </a>`).join("")}
+          </div>
+        `).join("");
+      }
+    }
+
+    renderLevelTabs();
+    loadAndRender();
+  </script>
+</body>
+</html>

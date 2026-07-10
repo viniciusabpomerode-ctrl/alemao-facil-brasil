@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escrita — Alemão Fácil Brasil</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .escrita-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .escrita-header h2 { margin: 0; }
+    .level-select {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .level-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 2px solid var(--border-light);
+      background: transparent;
+      font-weight: 600;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: .2s;
+      color: var(--text-primary);
+    }
+    .level-btn:hover { border-color: var(--color-primary); }
+    .level-btn.active {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+
+    .practice-card {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .german-sentence {
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 32px 20px;
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      border: 1px solid var(--border-light);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .input-area textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid var(--border-light);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 1.05rem;
+      resize: vertical;
+      transition: .2s;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .input-area textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+
+    .translation-box {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      transition: .3s;
+    }
+    .translation-box.hidden {
+      filter: blur(8px);
+      cursor: pointer;
+      user-select: none;
+    }
+    .translation-box.hidden:hover {
+      filter: blur(4px);
+    }
+    .translation-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .translation-header .hint {
+      font-size: .82rem;
+      color: var(--text-secondary);
+    }
+    .toggle-vis {
+      background: none;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: .85rem;
+      color: var(--text-secondary);
+    }
+    .toggle-vis:hover {
+      background: var(--bg-secondary);
+    }
+    .translation-text {
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+    .completed-text {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: var(--color-primary);
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .actions-bar .btn { flex: 1; min-width: 120px; }
+
+    .progress-info {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--text-secondary);
+      font-size: .88rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-nav"></div>
+  <div class="container" style="padding-top:28px; max-width:720px;">
+    <div class="escrita-header">
+      <h2>✍️ Escrita</h2>
+      <div class="level-select" id="level-select">
+        <button class="level-btn" data-level="random">🎲 Aleatório</button>
+        <button class="level-btn active" data-level="A1">A1</button>
+        <button class="level-btn" data-level="A2">A2</button>
+        <button class="level-btn" data-level="B1">B1</button>
+        <button class="level-btn" data-level="B2">B2</button>
+        <button class="level-btn" data-level="C1">C1</button>
+        <button class="level-btn" data-level="C2">C2</button>
+      </div>
+    </div>
+
+    <div class="progress-info" id="progress-info"></div>
+
+    <div class="card practice-card" id="practice-area">
+      <div class="german-sentence" id="german-text">Escolha um nível acima<br>ou clique em Aleatório 🎲</div>
+
+      <div class="input-area">
+        <textarea id="user-input" placeholder="Digite a frase em alemão aqui..." disabled></textarea>
+      </div>
+
+      <div class="translation-box hidden" id="translation-box">
+        <div class="translation-header">
+          <span class="hint">👁️ Clique no olho para ver a tradução</span>
+          <button class="toggle-vis" id="toggle-eye">👁️ Mostrar</button>
+        </div>
+        <div class="translation-text" id="translation-text"></div>
+      </div>
+
+      <div class="actions-bar">
+        <button class="btn btn-outline" id="check-btn" disabled>✅ Verificar</button>
+        <button class="btn btn-primary" id="next-btn">▶ Próxima</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/xp.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script src="../assets/js/i18n.js"></script>
+  <script src="../assets/js/data.js"></script>
+  <script>
+    Auth.requireLogin();
+    renderNav("escrita");
+
+    // ── Estado ──
+    const state = {
+      level: "A1",
+      sentences: [],
+      currentIndex: 0,
+      currentSentence: null,
+      isCompleted: false,
+    };
+
+    const germanEl = document.getElementById("german-text");
+    const inputEl = document.getElementById("user-input");
+    const translationBox = document.getElementById("translation-box");
+    const translationText = document.getElementById("translation-text");
+    const toggleEye = document.getElementById("toggle-eye");
+    const checkBtn = document.getElementById("check-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const progressInfo = document.getElementById("progress-info");
+    const levelBtns = document.querySelectorAll(".level-btn");
+
+    // ── Cache de dados carregados ──
+    const dataCache = {};
+
+    async function loadSentences(level) {
+      if (dataCache[level]) return dataCache[level];
+      try {
+        const res = await fetch(`../data/escrita/${level}.json`, { cache: "no-cache" });
+        if (!res.ok) throw new Error("Não encontrado");
+        const data = await res.json();
+        dataCache[level] = data;
+        return data;
+      } catch (e) {
+        console.error("Erro ao carregar", level, e);
+        return [];
+      }
+    }
+
+    async function loadAllSentences() {
+      const levels = ["A1","A2","B1","B2","C1","C2"];
+      let all = [];
+      for (const lvl of levels) {
+        const s = await loadSentences(lvl);
+        all = all.concat(s.map(s => ({ ...s, _level: lvl })));
+      }
+      // Embaralhar
+      for (let i = all.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [all[i], all[j]] = [all[j], all[i]];
+      }
+      return all;
+    }
+
+    async function pickSentence(level) {
+      let sentences;
+      if (level === "random") {
+        sentences = await loadAllSentences();
+      } else {
+        sentences = await loadSentences(level);
+      }
+      if (!sentences.length) {
+        germanEl.textContent = "Nenhuma frase encontrada para este nível.";
+        inputEl.disabled = true;
+        return;
+      }
+      const idx = Math.floor(Math.random() * sentences.length);
+      state.sentences = sentences;
+      state.currentIndex = idx;
+      state.currentSentence = sentences[idx];
+      state.isCompleted = false;
+      renderSentence();
+    }
+
+    function renderSentence() {
+      const s = state.currentSentence;
+      if (!s) return;
+      germanEl.textContent = s.german;
+      inputEl.value = "";
+      inputEl.disabled = false;
+      inputEl.focus();
+      translationBox.classList.add("hidden");
+      toggleEye.textContent = "👁️ Mostrar";
+      translationText.textContent = I18n.field(s, 'portuguese');
+      checkBtn.disabled = true;
+      checkBtn.textContent = "✅ Verificar";
+      progressInfo.textContent = `Frase ${state.currentIndex + 1} de ${state.sentences.length}`;
+    }
+
+    // ── Input: habilita verificar quando digitar ──
+    inputEl.addEventListener("input", () => {
+      checkBtn.disabled = inputEl.value.trim().length === 0;
+    });
+
+    // ── Verificar ──
+    checkBtn.addEventListener("click", () => {
+      const s = state.currentSentence;
+      if (!s || state.isCompleted) return;
+      const written = inputEl.value.trim();
+      const target = s.german.trim();
+
+      // Comparação simples (ignorando espaços extras e maiúsculas no começo)
+      const normalize = (t) => t.replace(/\s+/g, " ").trim().toLowerCase();
+      const correct = normalize(written) === normalize(target);
+
+      if (correct) {
+        state.isCompleted = true;
+        checkBtn.textContent = "✅ Correto!";
+        checkBtn.disabled = true;
+        // Revela tradução permanentemente
+        translationBox.classList.remove("hidden");
+        toggleEye.textContent = "👁️ Visível";
+        // Bônus visual
+        inputEl.style.borderColor = "#4CAF50";
+        // Ganha XP
+        const result = Progress.complete(`escrita-${s.id}`, 10);
+        if (result.leveledUp) {
+          alert(`🎉 Parabéns! Você subiu para o nível ${result.newLevel}!`);
+        }
+      } else {
+        checkBtn.textContent = "❌ Tente novamente";
+        checkBtn.disabled = false;
+        inputEl.style.borderColor = "#ff4444";
+        setTimeout(() => { inputEl.style.borderColor = ""; }, 1500);
+      }
+    });
+
+    // ── Olho mágico: revela/esconde tradução ──
+    toggleEye.addEventListener("click", () => {
+      if (state.isCompleted) return; // já revelada
+      translationBox.classList.toggle("hidden");
+      toggleEye.textContent = translationBox.classList.contains("hidden")
+        ? "👁️ Mostrar"
+        : "👁️ Ocultar";
+    });
+
+    // ── Próxima frase ──
+    nextBtn.addEventListener("click", () => {
+      inputEl.style.borderColor = "";
+      pickSentence(state.level);
+    });
+
+    // ── Seleção de nível ──
+    levelBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        levelBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.level = btn.dataset.level;
+        pickSentence(state.level);
+      });
+    });
+
+    // ── Iniciar com A1 ──
+    pickSentence("A1");
+  </script>
+</body>
+</html>

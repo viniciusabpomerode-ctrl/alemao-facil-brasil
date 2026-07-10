@@ -1,0 +1,10 @@
+# Cloudflare Worker — Proxy R2 para itens salvos
+# Deploy: npx wrangler deploy
+
+name = "afb-saved"
+main = "workers/saved-items.js"
+compatibility_date = "2025-01-01"
+
+[[r2_buckets]]
+binding = "EDICAO"
+bucket_name = "edicao"

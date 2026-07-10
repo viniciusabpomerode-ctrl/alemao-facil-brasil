@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alemão Fácil Brasil — Aprenda alemão de um jeito divertido</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="index.html"><span id="brand-icon">🛡️</span> Alemão Fácil Brasil</a>
+    <nav>
+      <a href="app/planos.html">Planos</a>
+      <a href="app/login.html">Entrar</a>
+    </nav>
+    <div class="nav-right">
+      <a class="btn btn-primary btn-sm" href="app/cadastro.html">Criar conta grátis</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Aprenda Alemão de um jeito<br>divertido, no seu ritmo 🇩🇪</h1>
+    <p>Diálogos, podcasts, verbos conjugados, músicas com letra traduzida e um jogo de
+       vocabulário — tudo organizado do A1 ao C2, com sistema de XP e níveis pra você
+       ver seu progresso de verdade.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="app/cadastro.html">Começar agora, é grátis</a>
+      <a class="btn btn-outline" href="app/login.html">Já tenho conta</a>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="grid grid-4">
+      <div class="card center">
+        <div style="font-size:2.2rem;">💬</div>
+        <h3>Diálogos</h3>
+        <p class="muted">Situações reais do dia a dia, frase por frase, com tradução e pronúncia.</p>
+      </div>
+      <div class="card center">
+        <div style="font-size:2.2rem;">🎙️</div>
+        <h3>Podcasts</h3>
+        <p class="muted">Histórias de aventura, mistério e suspense pra praticar sua compreensão.</p>
+      </div>
+      <div class="card center">
+        <div style="font-size:2.2rem;">📖</div>
+        <h3>Verbos</h3>
+        <p class="muted">Conjugações completas em passado, presente e futuro.</p>
+      </div>
+      <div class="card center">
+        <div style="font-size:2.2rem;">🎵</div>
+        <h3>Músicas</h3>
+        <p class="muted">Letras traduzidas pra aprender alemão cantando.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:40px; display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
+      <div style="font-size:3rem;">🏆</div>
+      <div>
+        <h3 style="margin:0 0 6px;">Sistema de XP e Níveis (A1 → C2)</h3>
+        <p class="muted" style="margin:0;">A cada diálogo, podcast, verbo ou música que você completa, ganha XP e sobe de nível — do Gato Maroto (A1) até a Águia do Conhecimento (C2).</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Alemão Fácil Brasil © 2026 — feito com 💙 para quem quer aprender alemão de verdade.</p>
+  </footer>
+
+  <script src="assets/js/theme.js"></script>
+  <script>
+    document.getElementById("brand-icon").textContent = Theme.get() === "vikings" ? "🛡️" : "🦋";
+  </script>
+</body>
+</html>

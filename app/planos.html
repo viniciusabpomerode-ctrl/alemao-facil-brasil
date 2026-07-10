@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planos — Alemão Fácil Brasil</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div id="nav-slot"></div>
+
+  <div class="container" style="padding-top:28px;">
+    <h2 class="center">Planos</h2>
+    <p class="center muted">Hoje tudo é gratuito enquanto o Alemão Fácil Brasil está em construção 🚧<br>Em breve teremos um plano Premium com pagamento via Stripe.</p>
+
+    <div class="grid grid-2" style="max-width:760px; margin:30px auto 0;">
+      <div class="card">
+        <h3>Grátis <span class="badge">atual</span></h3>
+        <p class="muted" style="margin-top:-8px;">Tudo que você já está usando.</p>
+        <ul>
+          <li>Diálogos, podcasts e verbos A1–C2</li>
+          <li>Músicas com letra traduzida</li>
+          <li>Jogo de vocabulário</li>
+          <li>Sistema de XP e níveis</li>
+        </ul>
+        <button class="btn btn-outline btn-block" disabled>Plano atual</button>
+      </div>
+      <div class="card" style="border:2px solid var(--color-warm);">
+        <h3>Premium <span class="badge badge-locked">em breve</span></h3>
+        <p class="muted" style="margin-top:-8px;">Assinatura mensal via Stripe.</p>
+        <ul>
+          <li>Áudio narrado de todos os diálogos e podcasts</li>
+          <li>Conteúdo extra e trilhas avançadas</li>
+          <li>Sem anúncios</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <button class="btn btn-primary btn-block" disabled title="Em breve">Assinar (em breve)</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    // Nesta pagina o usuario pode nao estar logado (acessivel pela landing)
+    const user = Auth.currentUser();
+    document.getElementById("nav-slot").innerHTML = user
+      ? '<div id="app-nav"></div>'
+      : `<header class="navbar">
+          <a class="brand" href="../index.html">🇩🇪 Alemão Fácil Brasil</a>
+          <nav></nav>
+          <div class="nav-right"><a class="btn btn-primary btn-sm" href="cadastro.html">Criar conta grátis</a></div>
+        </header>`;
+  </script>
+  <script src="../assets/js/xp.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script>
+    if (user) renderNav("planos");
+  </script>
+</body>
+</html>
