@@ -94,7 +94,9 @@
       
       for (const lv of levels) {
         try {
-          const r = await fetch(`../data/quiz_${lv.toLowerCase()}.json`);
+          // Try R2 first, fallback to local
+          let r = await fetch(`${R2}data/quiz_${lv.toLowerCase()}.json`).catch(() => null);
+          if (!r || !r.ok) r = await fetch(`../data/quiz_${lv.toLowerCase()}.json`);
           const data = await r.json();
           quizData[lv] = data.questoes || [];
           quizCounts[lv] = quizData[lv].length;
