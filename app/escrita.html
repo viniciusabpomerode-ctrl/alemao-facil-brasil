@@ -6,216 +6,40 @@
   <title>Escrita — Alemão Fácil Brasil</title>
   <link rel="stylesheet" href="../assets/css/style.css">
   <style>
-    .escrita-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    .escrita-header h2 { margin: 0; }
-    .level-select {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .level-btn {
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 2px solid var(--border-light);
-      background: transparent;
-      font-weight: 600;
-      font-size: .85rem;
-      cursor: pointer;
-      transition: .2s;
-      color: var(--text-primary);
-    }
-    .level-btn:hover { border-color: var(--color-primary); }
-    .level-btn.active {
-      background: var(--color-primary);
-      color: #fff;
-      border-color: var(--color-primary);
-    }
-
-    .practice-card {
-      max-width: 640px;
-      margin: 0 auto;
-    }
-    .german-sentence {
-      font-size: 1.4rem;
-      font-weight: 700;
-      text-align: center;
-      padding: 32px 20px;
-      background: var(--bg-secondary);
-      border-radius: 16px;
-      border: 1px solid var(--border-light);
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-    .input-area textarea {
-      width: 100%;
-      min-height: 100px;
-      padding: 16px;
-      border-radius: 12px;
-      border: 2px solid var(--border-light);
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-size: 1.05rem;
-      resize: vertical;
-      transition: .2s;
-      box-sizing: border-box;
-      font-family: inherit;
-    }
-    .input-area textarea:focus {
-      outline: none;
-      border-color: var(--color-primary);
-    }
-
-    .translation-box {
-      margin-top: 16px;
-      padding: 16px;
-      border-radius: 12px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-light);
-      transition: .3s;
-    }
-    .translation-box.hidden {
-      filter: blur(8px);
-      cursor: pointer;
-      user-select: none;
-    }
-    .translation-box.hidden:hover {
-      filter: blur(4px);
-    }
-    .translation-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-    .translation-header .hint {
-      font-size: .82rem;
-      color: var(--text-secondary);
-    }
-    .toggle-vis {
-      background: none;
-      border: 1px solid var(--border-light);
-      border-radius: 8px;
-      padding: 4px 10px;
-      cursor: pointer;
-      font-size: .85rem;
-      color: var(--text-secondary);
-    }
-    .toggle-vis:hover {
-      background: var(--bg-secondary);
-    }
-    .translation-text {
-      font-size: 1.05rem;
-      line-height: 1.5;
-    }
-    .completed-text {
-      font-size: 1.05rem;
-      line-height: 1.5;
-      color: var(--color-primary);
-    }
-
-    .actions-bar {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-      flex-wrap: wrap;
-    }
-    .actions-bar .btn { flex: 1; min-width: 120px; }
-
-    .german-sentence .source-tag{font-size:.7rem;background:var(--brand-light);color:var(--brand);padding:2px 8px;border-radius:10px;margin-left:8px;font-weight:600}
-    .stats-bar{display:flex;gap:16px;justify-content:center;margin-bottom:16px;font-size:.85rem;color:var(--text-secondary)}
-    .btn-rec{background:#f44336;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-weight:700;cursor:pointer;font-size:.9rem;transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit}
-    .btn-rec:hover{opacity:.9}
-    .btn-rec.recording{animation:pulse-rec .8s infinite alternate}
-    @keyframes pulse-rec{from{box-shadow:0 0 8px #f44336}to{box-shadow:0 0 20px #f44336}}
-    .recording-panel{margin-top:12px;padding:16px;border-radius:12px;background:var(--bg-secondary);border:1px solid var(--border-light);display:none}
-    .recording-panel.show{display:block}
-    .my-recordings{margin-top:30px}
-    .rec-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;margin:6px 0;background:var(--bg-secondary);border-radius:10px;border:1px solid var(--border-light);gap:8px}
-    .rec-item .info{flex:1;min-width:0}
-    .rec-item .text{font-weight:600;font-size:.85rem}
-    .rec-item .date{font-size:.72rem;color:var(--text-secondary)}
-    .empty-state{text-align:center;padding:40px;color:var(--text-secondary)}
+    .lvl-btn{padding:6px 14px;border-radius:20px;border:2px solid var(--border-light);background:transparent;font-weight:600;font-size:.82rem;cursor:pointer;transition:.2s;color:var(--text-primary);font-family:inherit;margin:2px}
+    .lvl-btn:hover{border-color:var(--color-primary)}
+    .lvl-btn.active{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .german-sentence{font-size:1.3rem;font-weight:700;text-align:center;padding:28px 20px;background:var(--bg-secondary);border-radius:16px;border:1px solid var(--border-light);margin-bottom:12px;line-height:1.5}
+    textarea{width:100%;min-height:90px;padding:14px;border-radius:12px;border:2px solid var(--border-light);background:var(--bg-primary);color:var(--text-primary);font-size:1rem;resize:vertical;box-sizing:border-box;font-family:inherit}
+    textarea:focus{outline:none;border-color:var(--color-primary)}
+    .translation-box{margin-top:12px;padding:14px;border-radius:12px;background:var(--bg-secondary);border:1px solid var(--border-light);cursor:pointer;user-select:none}
+    .translation-box.blurred{filter:blur(6px)}.translation-box.blurred:hover{filter:blur(2px)}
   </style>
 </head>
 <body>
 <div id="app-nav"></div>
-<div class="container" style="padding-top:28px; max-width:720px;">
-  <h2>✍️ Escrita &amp; Pronúncia</h2>
-  <div class="level-select" style="margin-bottom:16px;">
-    <button class="level-btn active" data-tab="escrita">✍️ Escrita</button>
-    <button class="level-btn" data-tab="pronuncia">🎤 Pronúncia</button>
+<div class="container" style="padding-top:28px;max-width:700px;">
+  <h2>✍️ Escrita</h2>
+  <p class="muted">Pratique escrevendo frases em alemão. <strong id="pool-count">...</strong> frases disponíveis.</p>
+
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="level-filters">
+    <button class="lvl-btn" data-l="random">🎲 Aleatório</button>
+    <button class="lvl-btn active" data-l="A1">A1</button><button class="lvl-btn" data-l="A2">A2</button>
+    <button class="lvl-btn" data-l="B1">B1</button><button class="lvl-btn" data-l="B2">B2</button>
+    <button class="lvl-btn" data-l="C1">C1</button><button class="lvl-btn" data-l="C2">C2</button>
   </div>
 
-  <div class="escrita-header" style="gap:6px;">
-    <div class="level-select" id="level-filters">
-      <button class="level-btn active" data-l="all">🎲 Todos</button>
-      <button class="level-btn" data-l="A1">A1</button><button class="level-btn" data-l="A2">A2</button>
-      <button class="level-btn" data-l="B1">B1</button><button class="level-btn" data-l="B2">B2</button>
-      <button class="level-btn" data-l="C1">C1</button><button class="level-btn" data-l="C2">C2</button>
+  <div class="card" id="practice-area" style="display:none">
+    <div class="german-sentence" id="german-text">...</div>
+    <textarea id="user-input" placeholder="Digite a frase em alemão aqui..."></textarea>
+    <div class="translation-box blurred" id="translation-box" title="Clique para revelar">
+      <div style="font-size:.75rem;color:var(--text-secondary);margin-bottom:4px">👁️ Clique para ver tradução</div>
+      <div id="translation-text"></div>
     </div>
-  </div>
-  <div class="level-select" id="type-filters" style="margin-bottom:16px;">
-    <button class="level-btn active" data-t="all">📚 Tudo</button>
-    <button class="level-btn" data-t="dialog">💬 Diálogos</button>
-    <button class="level-btn" data-t="verb">🔤 Verbos</button>
-    <button class="level-btn" data-t="giria">🗣️ Gírias</button>
-    <button class="level-btn" data-t="profissao">💼 Profissões</button>
-    <button class="level-btn" data-t="music">🎵 Músicas</button>
-  </div>
-
-  <div class="card practice-card" id="practice-area" style="display:none;">
-    <div class="german-sentence">
-      <span id="german-content"></span>
-      <span style="cursor:pointer;opacity:.6;font-size:1.1rem;margin-left:8px" id="play-original" title="Ouvir original">🔊</span>
-      <span class="source-tag" id="source-tag"></span>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-outline" id="check-btn" style="flex:1">✅ Verificar</button>
+      <button class="btn btn-primary" id="next-btn" style="flex:1">▶ Próxima</button>
     </div>
-
-    <div id="input-row">
-      <div class="input-area">
-        <textarea id="user-input" placeholder="Digite a frase em alemão aqui..."></textarea>
-      </div>
-    </div>
-
-    <div class="translation-box hidden" id="translation-box">
-      <div class="translation-header">
-        <span class="hint">👁️ Clique para ver a tradução</span>
-        <button class="toggle-vis" id="toggle-eye">👁️ Mostrar</button>
-      </div>
-      <div class="translation-text" id="translation-text"></div>
-    </div>
-
-    <div class="actions-bar" id="check-row">
-      <button class="btn btn-outline" id="check-btn">✅ Verificar</button>
-      <button class="btn btn-primary" id="next-btn">▶ Próxima</button>
-    </div>
-
-    <div id="rec-row" style="display:none;">
-      <button class="btn-rec" id="rec-btn" style="width:100%;">🎤 Gravar pronúncia</button>
-      <div class="recording-panel" id="rec-panel">
-        <audio id="rec-playback" controls style="width:100%;margin-bottom:8px;"></audio>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-primary btn-sm" id="rec-save">💾 Salvar</button>
-          <button class="btn btn-sm" id="rec-delete" style="color:#f44;">🗑️ Descartar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="my-recordings">
-    <h3>🎙️ Minhas Gravações</h3>
-    <div class="level-select" id="rec-time-filters" style="margin-bottom:12px;">
-      <button class="level-btn active" data-rt="all">📅 Tudo</button>
-      <button class="level-btn" data-rt="today">☀️ Hoje</button>
-      <button class="level-btn" data-rt="week">📆 7 dias</button>
-      <button class="level-btn" data-rt="month">🗓️ 30 dias</button>
-    </div>
-    <div id="recordings-list"><div class="empty-state">Nenhuma gravação ainda</div></div>
   </div>
 </div>
 
@@ -225,135 +49,55 @@
 <script src="../assets/js/nav.js"></script>
 <script src="../assets/js/i18n.js"></script>
 <script src="../assets/js/data.js"></script>
-<script src="../assets/js/saved_r2.js"></script>
 <script>
 Auth.requireLogin();renderNav("escrita");
 
 const R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
-const st={level:"all",type:"all",sentence:null,pool:[],tab:"escrita"};
-let recFilter="all",mediaRecorder=null,recordedChunks=[],recordedBlob=null;
-const origAudio=new Audio();
-
-// Tab switching
-function switchTab(tab){
-  st.tab=tab;
-  document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
-  document.getElementById("input-row").style.display=tab==="escrita"?"":"none";
-  document.getElementById("check-row").style.display=tab==="escrita"?"":"none";
-  document.getElementById("rec-row").style.display=tab==="pronuncia"?"":"none";
-  document.getElementById("tab-label").textContent=tab==="escrita"?"Digite a frase em alemão":"Ouça e grave sua pronúncia";
-}
-
-// IndexedDB for recordings (24h TTL unsaved)
-function openDB(){return new Promise((r,rej)=>{const req=indexedDB.open("afb_recs",1);req.onupgradeneeded=e=>{e.target.result.createObjectStore("recs",{keyPath:"id"})};req.onsuccess=()=>r(req.result);req.onerror=rej})}
-async function putRec(rec){const db=await openDB();return new Promise((r,rej)=>{const tx=db.transaction("recs","readwrite");tx.objectStore("recs").put(rec);tx.oncomplete=()=>r();tx.onerror=rej})}
-async function getAllRecs(){const db=await openDB();return new Promise((r,rej)=>{const tx=db.transaction("recs","readonly");const req=tx.objectStore("recs").getAll();req.onsuccess=()=>r(req.result);req.onerror=rej})}
-async function delRec(id){const db=await openDB();return new Promise((r,rej)=>{const tx=db.transaction("recs","readwrite");tx.objectStore("recs").delete(id);tx.oncomplete=()=>r();tx.onerror=rej})}
-async function cleanOld(){const db=await openDB();const tx=db.transaction("recs","readwrite");const req=tx.objectStore("recs").getAll();req.onsuccess=()=>{const now=Date.now();for(const rec of req.result){if(now-rec.ts>86400000&&!rec.saved)tx.objectStore("recs").delete(rec.id)}}}
+const st={level:"A1",pool:[],sentence:null};
 
 async function buildPool(){
-  const pool=[],lvs=st.level==="all"?["A1","A2","B1","B2","C1","C2"]:[st.level];
-  const ok=t=>st.type==="all"||st.type===t;
-  
-  if(ok("dialog")){for(const lv of lvs){try{const d=await AFBData.nivel(lv);for(const th of d.dialog_themes||[]){for(const dg of th.dialogs||[]){for(const s of dg.sentences||[]){pool.push({german:s.german_text,portuguese:s.portuguese_translation,level:lv,type:"dialog",source:th.theme_name,audio:s.audio_url})}}}}}catch(e){}}}
-  if(ok("verb")){for(const lv of lvs){try{const verbs=await AFBData.verbos(lv);for(const v of verbs){for(const ex of v.examples||[]){pool.push({german:ex.german,portuguese:ex.portuguese,level:lv,type:"verb",source:v.verb,audio:ex.audio_url})}}}}catch(e){}}}
-  if(ok("giria")){try{let r=await fetch(R2+"data/girias.json").catch(()=>fetch("../data/girias.json"));const g=await r.json();for(const e of g.expressions||[]){if(lvs.includes(e.level))pool.push({german:e.german,portuguese:e.portuguese,level:e.level,type:"giria",source:e.category,audio:e.audio_url})}}catch(e){}}
-  if(ok("profissao")){try{let r=await fetch(R2+"data/profissoes.json").catch(()=>fetch("../data/profissoes.json"));const p=await r.json();for(const e of p.expressions||[]){for(const ph of e.phrases||[]){if(lvs.includes(ph.level))pool.push({german:ph.de,portuguese:ph.pt,level:ph.level,type:"profissao",source:e.profession,audio:ph.audio_url})}}}catch(e){}}
-  if(ok("music")){try{const m=await AFBData.musica();for(const tracks of Object.values(m.tracks_by_level||{})){for(const t of tracks){for(const l of t.lyrics||[]){pool.push({german:l.german_text,portuguese:I18n.field(l,'portuguese_text'),level:"B1",type:"music",source:t.title_german,audio:null})}}}}catch(e){}}
+  const pool=[],lvs=st.level==="random"?["A1","A2","B1","B2","C1","C2"]:[st.level];
+  for(const lv of lvs){
+    try{
+      let r=await fetch(R2+"data/escrita/"+lv+".json").catch(()=>fetch("../data/escrita/"+lv+".json"));
+      for(const s of await r.json())pool.push({german:s.german,portuguese:s.portuguese||I18n.field(s,'portuguese'),level:lv});
+    }catch(e){}
+  }
+  // Adiciona girias e profissoes
+  try{let r=await fetch(R2+"data/girias.json").catch(()=>fetch("../data/girias.json"));for(const e of(await r.json()).expressions||[]){if(lvs.includes(e.level))pool.push({german:e.german,portuguese:e.portuguese,level:e.level})}}catch(e){}
+  try{let r=await fetch(R2+"data/profissoes.json").catch(()=>fetch("../data/profissoes.json"));for(const e of(await r.json()).expressions||[]){for(const ph of e.phrases||[]){if(lvs.includes(ph.level))pool.push({german:ph.de,portuguese:ph.pt,level:ph.level})}}catch(e){}
 
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
   st.pool=pool;
   document.getElementById("pool-count").textContent=pool.length.toLocaleString();
-  if(pool.length){document.getElementById("practice-area").style.display="";showSentence()}
+  if(pool.length){document.getElementById("practice-area").style.display="";show()}else{document.getElementById("german-text").textContent="Nenhuma frase. Tente outro nível."}
 }
 
-function showSentence(){
-  const s=st.pool[Math.floor(Math.random()*st.pool.length)];
-  st.sentence=s;
-  document.getElementById("german-content").textContent=s.german;
-  document.getElementById("source-tag").textContent=s.source||s.type;
+function show(){
+  const s=st.pool[Math.floor(Math.random()*st.pool.length)];st.sentence=s;
+  document.getElementById("german-text").textContent=s.german;
   document.getElementById("user-input").value="";document.getElementById("user-input").style.borderColor="";
   document.getElementById("translation-text").textContent=s.portuguese;
-  document.getElementById("translation-box").classList.add("hidden");
-  document.getElementById("toggle-eye").textContent="👁️ Mostrar";
+  document.getElementById("translation-box").classList.add("blurred");
   document.getElementById("check-btn").textContent="✅ Verificar";document.getElementById("check-btn").disabled=false;
-  document.getElementById("rec-panel").classList.remove("show");recordedBlob=null;
 }
-
-document.getElementById("play-original").addEventListener("click",()=>{
-  const s=st.sentence;if(!s||!s.audio)return;
-  const url=s.audio.startsWith("http")?s.audio:R2+s.audio;
-  if(origAudio.src===url&&!origAudio.paused){origAudio.pause();return}
-  origAudio.src=url;origAudio.play().catch(()=>{});
-});
 
 document.getElementById("check-btn").addEventListener("click",()=>{
   const s=st.sentence;if(!s)return;
-  const w=document.getElementById("user-input").value.trim();
   const n=t=>t.replace(/\s+/g," ").trim().toLowerCase();
-  if(n(w)===n(s.german)){
+  if(n(document.getElementById("user-input").value)===n(s.german)){
     document.getElementById("check-btn").textContent="✅ Correto!";document.getElementById("check-btn").disabled=true;
     document.getElementById("user-input").style.borderColor="#4CAF50";
-    document.getElementById("translation-box").classList.remove("hidden");
-    document.getElementById("toggle-eye").textContent="👁️ Visível";
+    document.getElementById("translation-box").classList.remove("blurred");
     try{Progress.complete("escrita-"+Date.now(),5)}catch(e){}
-  }else{
-    document.getElementById("check-btn").textContent="❌ Tente de novo";
-    document.getElementById("user-input").style.borderColor="#f44";
-    setTimeout(()=>document.getElementById("user-input").style.borderColor="",1500);
-  }
+  }else{document.getElementById("check-btn").textContent="❌ Tente de novo";document.getElementById("user-input").style.borderColor="#f44";setTimeout(()=>document.getElementById("user-input").style.borderColor="",1500)}
 });
 
-document.getElementById("next-btn").addEventListener("click",()=>showSentence());
-document.getElementById("toggle-eye").addEventListener("click",function(){
-  document.getElementById("translation-box").classList.toggle("hidden");
-  this.textContent=document.getElementById("translation-box").classList.contains("hidden")?"👁️ Mostrar":"👁️ Ocultar";
-});
+document.getElementById("next-btn").addEventListener("click",show);
+document.getElementById("translation-box").addEventListener("click",function(){this.classList.toggle("blurred")});
+document.getElementById("level-filters").addEventListener("click",e=>{if(e.target.classList.contains("lvl-btn")){document.querySelectorAll("#level-filters .lvl-btn").forEach(b=>b.classList.remove("active"));e.target.classList.add("active");st.level=e.target.dataset.l;buildPool()}});
 
-// Recording
-document.getElementById("rec-btn").addEventListener("click",async()=>{
-  if(mediaRecorder&&mediaRecorder.state==="recording"){mediaRecorder.stop();return}
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    recordedChunks=[];mediaRecorder=new MediaRecorder(stream,{mimeType:"audio/webm"});
-    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordedChunks.push(e.data)};
-    mediaRecorder.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());recordedBlob=new Blob(recordedChunks,{type:"audio/webm"});document.getElementById("rec-playback").src=URL.createObjectURL(recordedBlob);document.getElementById("rec-panel").classList.add("show")};
-    mediaRecorder.start();document.getElementById("rec-btn").textContent="⏹ Parar";document.getElementById("rec-btn").classList.add("recording");
-  }catch(e){alert("Permita o microfone!")}
-});
-
-document.getElementById("rec-save").addEventListener("click",async()=>{
-  if(!recordedBlob||!st.sentence)return;
-  const id="rec_"+Date.now(),reader=new FileReader();
-  reader.onload=async()=>{
-    await putRec({id,text:st.sentence.german,translation:st.sentence.portuguese,ts:Date.now(),saved:true,base64:reader.result.split(",")[1]});
-    try{await SavedItems.add({type:"recording",id,title:st.sentence.german.substring(0,60),nivel:st.sentence.level})}catch(e){}
-    document.getElementById("rec-panel").classList.remove("show");renderRecs();
-  };
-  reader.readAsDataURL(recordedBlob);
-});
-
-document.getElementById("rec-delete").addEventListener("click",()=>{recordedBlob=null;document.getElementById("rec-panel").classList.remove("show")});
-
-async function renderRecs(){
-  await cleanOld();let recs=await getAllRecs();recs.sort((a,b)=>b.ts-a.ts);
-  if(recFilter!=="all"){const now=Date.now();recs=recs.filter(r=>{if(recFilter==="today")return now-r.ts<86400000;if(recFilter==="week")return now-r.ts<7*86400000;if(recFilter==="month")return now-r.ts<30*86400000;return true})}
-  const el=document.getElementById("recordings-list");
-  if(!recs.length){el.innerHTML='<div class="empty-state">Nenhuma gravação</div>';return}
-  el.innerHTML=recs.map(r=>`<div class="rec-item"><div class="info"><div class="text">${(r.text||"").substring(0,80)}</div><div class="date">${new Date(r.ts).toLocaleString("pt-BR")} ${r.saved?"💾":"⏳24h"}</div></div><div style="display:flex;gap:6px;"><button class="btn btn-sm" onclick="playRec('${r.id}')">▶</button><button class="btn btn-sm" style="color:#f44" onclick="delRec('${r.id}');renderRecs()">🗑️</button></div></div>`).join("");
-}
-
-async function playRec(id){const recs=await getAllRecs();const r=recs.find(x=>x.id===id);if(!r||!r.base64)return;const b=await fetch("data:audio/webm;base64,"+r.base64).then(x=>x.blob());document.getElementById("rec-playback").src=URL.createObjectURL(b);document.getElementById("rec-panel").classList.add("show")}
-
-document.querySelector(".level-select").addEventListener("click",e=>{if(e.target.classList.contains("level-btn")&&e.target.dataset.l){document.querySelectorAll(".level-select .level-btn[data-l]").forEach(c=>c.classList.remove("active"));e.target.classList.add("active");st.level=e.target.dataset.l;buildPool()}});
-document.getElementById("type-filters").addEventListener("click",e=>{if(e.target.classList.contains("level-btn")){document.querySelectorAll("#type-filters .level-btn").forEach(c=>c.classList.remove("active"));e.target.classList.add("active");st.type=e.target.dataset.t;buildPool()}});
-document.getElementById("rec-time-filters").addEventListener("click",e=>{if(e.target.classList.contains("level-btn")){document.querySelectorAll("#rec-time-filters .level-btn").forEach(c=>c.classList.remove("active"));e.target.classList.add("active");recFilter=e.target.dataset.rt;renderRecs()}});
-// Tab switching
-document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));
-
-window.addEventListener("beforeunload",()=>{if(recordedBlob&&st.sentence){const id="rec_"+Date.now(),reader=new FileReader();reader.onload=()=>putRec({id,text:st.sentence.german,translation:st.sentence.portuguese,ts:Date.now(),saved:false,base64:reader.result.split(",")[1]});reader.readAsDataURL(recordedBlob)}});
-
-buildPool();renderRecs();
+buildPool();
 </script>
 </body>
 </html>
