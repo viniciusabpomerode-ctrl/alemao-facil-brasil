@@ -21,23 +21,31 @@
   <script src="../assets/js/i18n.js"></script>
   <script src="../assets/js/data.js"></script>
   <script src="../assets/js/saved_r2.js"></script>
+  <script src="../assets/js/guest.js"></script>
   <script>
-    Auth.requireLogin();
     renderNav("musica");
 
     (async () => {
+      const isGuest = await Guest.check();
       const data = await AFBData.musica();
-      const progress = Progress.load();
+      const progress = Guest.safeProgress();
       const isVikings = Theme.get() === "vikings";
       const el = document.getElementById("levels");
 
+      let idx = 0;
+      let totalTracks = 0;
       el.innerHTML = data.levels.map((lvl) => {
         const tracks = data.tracks_by_level[lvl.id] || [];
+        totalTracks += tracks.length;
         const name = isVikings ? lvl.vikings_name : lvl.guardians_name;
         return `
           <h4 class="section-title">Nível ${lvl.level_number} — ${name}</h4>
           <div class="grid grid-4">
-            ${tracks.map((t) => `
+            ${tracks.map((t) => {
+              if (isGuest && idx++ >= AFB_FREE_LIMIT) {
+                return Guest.lockedCard(t.title_german, `${t.genre.icon} ${t.genre.name} · ${t.artist}`);
+              }
+              return `
               <a class="card card-sm" href="musica-player.html?id=${t.id}" style="position:relative;">
                 <div class="flex-between">
                   <span class="badge" style="background:${t.genre.color}22; color:${t.genre.color};">${t.genre.icon} ${t.genre.name}</span>
@@ -46,24 +54,27 @@
                 <b style="display:block; margin-top:8px;">${t.title_german}</b>
                 <span class="muted" style="font-size:.82rem;">${I18n.field(t, 'title_portuguese')} · ${t.artist}</span>
                 <span class="music-save-btn" data-id="${t.id}" style="position:absolute;top:8px;right:8px;" onclick="event.preventDefault();event.stopPropagation();"></span>
-              </a>`).join("")}
+              </a>`;
+            }).join("")}
           </div>
         `;
-      }).join("");
+      }).join("") + (isGuest && totalTracks > AFB_FREE_LIMIT ? Guest.banner(totalTracks - AFB_FREE_LIMIT, "músicas com letra traduzida") : "");
 
-      // Init save buttons for all music tracks
-      Object.entries(data.tracks_by_level).forEach(([lvlId, tracks]) => {
-        tracks.forEach(t => {
-          const span = document.querySelector(`.music-save-btn[data-id="${t.id}"]`);
-          if (!span) return;
-          const btn = SavedItems.createSaveButton({
-            type: "music", id: String(t.id),
-            nivel: lvlId, title: t.title_german,
-            refUrl: `musica-player.html?id=${t.id}`
+      // Init save buttons (so nos cards liberados; logado ve todos)
+      if (!isGuest) {
+        Object.entries(data.tracks_by_level).forEach(([lvlId, tracks]) => {
+          tracks.forEach(t => {
+            const span = document.querySelector(`.music-save-btn[data-id="${t.id}"]`);
+            if (!span) return;
+            const btn = SavedItems.createSaveButton({
+              type: "music", id: String(t.id),
+              nivel: lvlId, title: t.title_german,
+              refUrl: `musica-player.html?id=${t.id}`
+            });
+            span.appendChild(btn);
           });
-          span.appendChild(btn);
         });
-      });
+      }
     })();
   </script>
 </body>

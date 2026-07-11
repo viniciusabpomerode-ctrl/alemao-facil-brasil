@@ -26,16 +26,18 @@ function renderNav(active) {
 
   const el = document.getElementById("app-nav");
   if (!el) return;
+  const navRight = user
+    ? `<span class="muted" style="font-size:.85rem;">Olá, ${user.name.split(" ")[0]}</span>
+       <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Sair</button>`
+    : `<a class="btn btn-ghost btn-sm" href="login.html">Entrar</a>
+       <a class="btn btn-primary btn-sm" href="cadastro.html">Criar conta</a>`;
   el.outerHTML = `
     <header class="navbar">
-      <a class="brand" href="dashboard.html">
+      <a class="brand" href="${user ? "dashboard.html" : "../index.html"}">
         <span>${Theme.get() === "vikings" ? "🛡️" : "🦋"}</span> Alemão Fácil Brasil
       </a>
       <nav>${linksHtml}</nav>
-      <div class="nav-right">
-        <span class="muted" style="font-size:.85rem;">Olá, ${user ? user.name.split(" ")[0] : ""}</span>
-        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Sair</button>
-      </div>
+      <div class="nav-right">${navRight}</div>
     </header>
   `;
 }

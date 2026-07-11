@@ -30,28 +30,33 @@
   <script src="../assets/js/nav.js"></script>
   <script src="../assets/js/i18n.js"></script>
   <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/guest.js"></script>
   <script>
-    Auth.requireLogin();
     renderNav("cursos");
 
     const params = new URLSearchParams(location.search);
     let currentLevel = params.get("nivel") || "A1";
-    let currentTab = "dialogos";
+    let currentTab = ["dialogos", "podcasts", "verbos"].includes(params.get("tab")) ? params.get("tab") : "dialogos";
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === currentTab));
     let levelData = null;   // { dialog_themes, podcasts } do nivel atual
     let verbsData = null;   // verbos do nivel atual (carregado so quando precisa)
-    const progress = Progress.load();
+    let isGuest = true;     // visitante: 20 de cada liberados, resto com cadeado
+    const progress = Guest.safeProgress();
 
     function renderLevelTabs() {
       const wrap = document.getElementById("level-tabs");
       wrap.innerHTML = LEVEL_ORDER.map((code) => {
         const info = XP_LEVELS[code];
-        const unlocked = XPSystem.canAccessLevel(progress.xp, code);
+        // Visitante: so A1 liberado (Premium destrava o resto);
+        // logado: destrava por XP como antes
+        const unlocked = isGuest ? code === "A1" : XPSystem.canAccessLevel(progress.xp, code);
+        const lockLabel = isGuest ? "🔒 Premium" : "🔒 " + info.minXP + " XP";
         return `
           <div class="level-tab ${code === currentLevel ? "active-level" : ""} ${unlocked ? "" : "locked"}"
                style="background:var(${info.color})"
-               onclick="selectLevel('${code}')">
+               onclick="${isGuest && !unlocked ? `location.href='planos.html'` : `selectLevel('${code}')`}">
             ${info.icon} ${code}
-            ${unlocked ? "" : '<div style="font-size:.7rem;">🔒 ' + info.minXP + ' XP</div>'}
+            ${unlocked ? "" : '<div style="font-size:.7rem;">' + lockLabel + '</div>'}
           </div>`;
       }).join("");
     }
@@ -84,12 +89,18 @@
       if (currentTab === "verbos") {
         if (!verbsData) verbsData = await AFBData.verbos(currentLevel);
         if (!verbsData.length) { el.innerHTML = emptyMsg(); return; }
-        el.innerHTML = `<div class="grid grid-4">${verbsData.map((v) => `
+        let vIdx = 0;
+        el.innerHTML = `<div class="grid grid-4">${verbsData.map((v) => {
+          if (isGuest && vIdx++ >= AFB_FREE_LIMIT) {
+            return Guest.lockedCard(v.base_verb, I18n.field(v, 'portuguese_translation'));
+          }
+          return `
           <a class="card card-sm center" href="verbo.html?id=${v.id}&nivel=${currentLevel}">
             <b style="font-size:1.1rem;">${v.base_verb}</b>
             <p class="muted" style="margin:4px 0; font-size:.85rem;">${I18n.field(v, 'portuguese_translation')}</p>
             ${progress.completed.includes("verb-" + v.id) ? '<span class="badge">✅</span>' : `<span class="xp-pill">+${v.xp_reward} XP</span>`}
-          </a>`).join("")}</div>`;
+          </a>`;
+        }).join("")}</div>${isGuest && verbsData.length > AFB_FREE_LIMIT ? Guest.banner(1315 - AFB_FREE_LIMIT, "verbos conjugados") : ""}`;
         return;
       }
 
@@ -98,43 +109,59 @@
       if (currentTab === "dialogos") {
         const themes = levelData.dialog_themes || [];
         if (!themes.length) { el.innerHTML = emptyMsg(); return; }
+        let dIdx = 0;
         el.innerHTML = themes.map((th) => `
           <h4 style="margin:20px 0 8px;">${I18n.field(th, 'title')}</h4>
           <p class="muted" style="margin:0 0 10px; font-size:.88rem;">${I18n.field(th, 'description') || ""}</p>
           <div class="grid grid-3">
-            ${th.dialogs.map((d) => `
+            ${th.dialogs.map((d) => {
+              if (isGuest && dIdx++ >= AFB_FREE_LIMIT) {
+                return Guest.lockedCard(I18n.field(d, 'title'), I18n.field(d, 'description') || "");
+              }
+              return `
               <a class="card card-sm" href="dialogo.html?id=${d.id}&nivel=${currentLevel}">
                 <div class="flex-between">
                   <b>${I18n.field(d, 'title')}</b>
                   ${progress.completed.includes("dialog-" + d.id) ? '<span class="badge">✅</span>' : `<span class="xp-pill">+${d.xp_reward} XP</span>`}
                 </div>
                 <p class="muted" style="font-size:.85rem; margin:6px 0 0;">${I18n.field(d, 'description') || ""}</p>
-              </a>`).join("")}
+              </a>`;
+            }).join("")}
           </div>
-        `).join("");
+        `).join("") + (isGuest && dIdx > AFB_FREE_LIMIT ? Guest.banner(1225 - AFB_FREE_LIMIT, "diálogos") : "");
       } else {
         const podcasts = levelData.podcasts || [];
         if (!podcasts.length) { el.innerHTML = emptyMsg(); return; }
         const byCategory = {};
         podcasts.forEach((p) => { (byCategory[p.category] = byCategory[p.category] || []).push(p); });
+        let pIdx = 0;
         el.innerHTML = Object.entries(byCategory).map(([cat, list]) => `
           <h4 style="margin:20px 0 8px;">${cat}</h4>
           <div class="grid grid-3">
-            ${list.map((p) => `
+            ${list.map((p) => {
+              if (isGuest && pIdx++ >= AFB_FREE_LIMIT) {
+                return Guest.lockedCard(I18n.field(p, 'title'), I18n.field(p, 'description') || "");
+              }
+              return `
               <a class="card card-sm" href="podcast.html?id=${p.id}&nivel=${currentLevel}">
                 <div class="flex-between">
                   <b>${I18n.field(p, 'title')}</b>
                   ${progress.completed.includes("podcast-" + p.id) ? '<span class="badge">✅</span>' : `<span class="xp-pill">+${p.xp_reward} XP</span>`}
                 </div>
                 <p class="muted" style="font-size:.85rem; margin:6px 0 0;">${I18n.field(p, 'description') || ""}</p>
-              </a>`).join("")}
+              </a>`;
+            }).join("")}
           </div>
-        `).join("");
+        `).join("") + (isGuest && pIdx > AFB_FREE_LIMIT ? Guest.banner(38 - AFB_FREE_LIMIT, "podcasts") : "");
       }
     }
 
-    renderLevelTabs();
-    loadAndRender();
+    Guest.check().then((g) => {
+      isGuest = g;
+      if (isGuest && currentLevel !== "A1") currentLevel = "A1";
+      renderLevelTabs();
+      loadAndRender();
+    });
   </script>
 </body>
 </html>

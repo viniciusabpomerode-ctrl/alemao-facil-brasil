@@ -218,22 +218,3 @@
     createWidget();
   }
 })();
-      wrapper.classList.toggle("expanded");
-      const frame = document.getElementById("lofi-frame");
-      if (wrapper.classList.contains("expanded")) {
-        frame.height = 120;
-        expandBtn.textContent = "⤡";
-      } else {
-        frame.height = 80;
-        expandBtn.textContent = "⤢";
-      }
-    });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => { createStyles(); createWidget(); });
-  } else {
-    createStyles();
-    createWidget();
-  }
-})();

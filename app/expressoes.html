@@ -186,9 +186,13 @@
   <script src="../assets/js/data.js"></script>
   <script src="../assets/js/i18n.js"></script>
   <script src="../assets/js/saved_r2.js"></script>
+  <script src="../assets/js/guest.js"></script>
   <script>
-    Auth.requireLogin();
     renderNav("expressoes");
+
+    // Modo visitante: primeiras AFB_FREE_LIMIT expressoes liberadas, resto com cadeado
+    let isGuest = true;
+    const guestFreeIds = new Set();
 
     const audioEl = document.getElementById("expr-audio");
     let allData = [];
@@ -211,6 +215,7 @@
         try { const r = await fetch("../data/girias.json"); data = await r.json(); }
         catch { const r = await fetch(audioBaseUrl + "data/girias.json"); data = await r.json(); }
         allData = data.expressions || [];
+        allData.slice(0, AFB_FREE_LIMIT).forEach(e => guestFreeIds.add(e.id));
         renderMain();
       } catch (e) {
         document.getElementById("cat-grid").innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>Em breve!</h3></div>';
@@ -291,7 +296,9 @@
       else if (sortMode === "level") filtradas.sort((a,b) => (levelOrder[a.level]??9)-(levelOrder[b.level]??9) || (a.german||"").localeCompare(b.german||""));
 
       document.getElementById("counter-cat").textContent = `${filtradas.length} ${filtradas.length!==1?'expressões':'expressão'}`;
-      document.getElementById("list-cat").innerHTML = filtradas.length ? renderCards(filtradas) : '<div class="empty-state"><p>Nenhuma encontrada.</p></div>';
+      const lockedHere = isGuest ? filtradas.filter(e => !guestFreeIds.has(e.id)).length : 0;
+      document.getElementById("list-cat").innerHTML = (filtradas.length ? renderCards(filtradas) : '<div class="empty-state"><p>Nenhuma encontrada.</p></div>')
+        + (lockedHere > 0 ? Guest.banner(1509 - AFB_FREE_LIMIT, "gírias e expressões") : "");
     }
 
     function setLevel(lv) { activeLevel = lv; searchCat = ""; document.getElementById("search-cat").value = ""; renderCat(); }
@@ -312,7 +319,11 @@
 
     // ── RENDER CARDS ──
     function renderCards(lista) {
-      return lista.map((e,i) => `
+      return lista.map((e,i) => {
+        if (isGuest && !guestFreeIds.has(e.id)) {
+          return Guest.lockedRow(e.german || "", e.portuguese || "");
+        }
+        return `
         <div class="expr-card" id="expr-${i}" onclick="toggleExpand(${i})">
           <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
             <div>
@@ -337,7 +348,8 @@
               <button class="btn-speed ${currentSpeed===1.0?'active':''}" onclick="event.stopPropagation(); setSpeed(1.0)">1x</button>
             </div>
           </div>
-        </div>`).join("");
+        </div>`;
+      }).join("");
     }
 
     function toggleExpand(idx) {
@@ -381,11 +393,11 @@
     const _renderCards = renderCards;
     renderCards = function(lista) {
       const html = _renderCards(lista);
-      setTimeout(() => initSaveButtons(lista), 0);
+      if (!isGuest) setTimeout(() => initSaveButtons(lista), 0);
       return html;
     };
 
-    load();
+    Guest.check().then((g) => { isGuest = g; load(); });
   </script>
 </body>
 </html>

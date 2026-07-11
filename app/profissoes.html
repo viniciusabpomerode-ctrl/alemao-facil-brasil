@@ -93,9 +93,13 @@
   <script src="../assets/js/data.js"></script>
   <script src="../assets/js/i18n.js"></script>
   <script src="../assets/js/saved_r2.js"></script>
+  <script src="../assets/js/guest.js"></script>
   <script>
-    Auth.requireLogin();
     renderNav("profissoes");
+
+    // Modo visitante: 1a profissao com 20 frases liberadas, resto com cadeado
+    let isGuest = true;
+    let guestFreeProfId = null;
 
     const audioEl = document.getElementById("audio-el");
     const R2 = "https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
@@ -117,6 +121,7 @@
         let r = await fetch(`${R2}data/profissoes.json`).catch(() => null);
         if (!r || !r.ok) r = await fetch("../data/profissoes.json");
         allData = (await r.json()).expressions || [];
+        if (allData.length) guestFreeProfId = allData[0].id;
         renderMain();
       } catch (e) {
         document.getElementById("cat-grid").innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>Em breve!</h3></div>';
@@ -212,7 +217,11 @@
     }
 
     function renderCards(lista) {
-      return lista.map((e,i) => `
+      return lista.map((e,i) => {
+        if (isGuest && e.id !== guestFreeProfId) {
+          return Guest.lockedRow(`👤 ${e.profession||""}`, `${e.category||""} · ${(e.phrases||[]).length} frases`);
+        }
+        return `
         <div class="prof-card" id="prof-${i}">
           <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;" onclick="abrirProf(${i})">
             <div>
@@ -226,7 +235,8 @@
             </div>
             <span class="prof-save-btn-${i}"></span>
           </div>
-        </div>`).join("");
+        </div>`;
+      }).join("") + (isGuest ? Guest.banner(1200 - AFB_FREE_LIMIT, "frases de profissões com áudio") : "");
     }
 
     function abrirProf(idx) {
@@ -237,13 +247,18 @@
       document.getElementById("main-view").style.display = "none";
       document.getElementById("prof-view").style.display = "";
 
-      // Show all phrases grouped by level
+      // Show all phrases grouped by level (visitante: 20 liberadas, resto com cadeado)
       const levels = ["A1","A2","B1","B2","C1","C2"];
+      let phraseIdx = 0;
       let phrasesHtml = levels.map(lv => {
         const frases = (e.phrases||[]).filter(p => p.level === lv);
         if (!frases.length) return "";
         return `<h4 style="margin:16px 0 8px;color:${levelColor(lv)}">${lv}</h4>` +
-          frases.map((f, fi) => `
+          frases.map((f, fi) => {
+            if (isGuest && phraseIdx++ >= AFB_FREE_LIMIT) {
+              return Guest.lockedRow(f.de, f.pt);
+            }
+            return `
             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;margin:4px 0;background:var(--bg-secondary);border-radius:8px;gap:8px;">
               <div style="flex:1">
                 <div class="phrase-de">${f.de}</div>
@@ -254,7 +269,8 @@
                 <span class="prof-phrase-save-${idx}_${lv}_${fi}"></span>
               </div>
             </div>
-          `).join("");
+          `;
+          }).join("");
       }).join("");
 
       document.getElementById("prof-detail").innerHTML = `
@@ -270,6 +286,7 @@
 
       // Save button for profession
       setTimeout(() => {
+        if (isGuest) return;
         const saveSpan = document.getElementById("prof-detail-save");
         if (saveSpan) saveSpan.appendChild(SavedItems.createSaveButton({
           type: "profession", id: String(e.id), nivel: e.level || "",
@@ -298,7 +315,7 @@
     const _renderCards = renderCards;
     renderCards = function(lista) {
       const html = _renderCards(lista);
-      setTimeout(initSaveButtons, 50);
+      if (!isGuest) setTimeout(initSaveButtons, 50);
       return html;
     };
 
@@ -314,7 +331,7 @@
       audioEl.src=url; audioEl.play().catch(()=>{});
     }
 
-    load();
+    Guest.check().then((g) => { isGuest = g; load(); });
   </script>
 </body>
 </html>

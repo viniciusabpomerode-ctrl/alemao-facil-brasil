@@ -90,9 +90,22 @@
   <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/nav.js"></script>
+  <script src="../assets/js/guest.js"></script>
   <script>
-    Auth.requireLogin();
     renderNav("simulado");
+
+    // Modo visitante: simulados sao conteudo Premium — mostra a vitrine bloqueada
+    let isGuest = true;
+    Guest.check().then((g) => {
+      isGuest = g;
+      if (!isGuest) return;
+      document.querySelectorAll(".level-btn").forEach((b) => {
+        b.classList.add("locked-item");
+        b.setAttribute("onclick", "location.href='planos.html'");
+        b.innerHTML = "🔒 " + b.innerHTML.replace(/🟢|🔵|🟠|🟣|🔴|⚫/, "").trim();
+      });
+      document.getElementById("simulado-area").innerHTML = Guest.banner(598, "questões de simulado Goethe (Lesen · Hören · Schreiben · Sprechen)");
+    });
 
     let questoes = [], respostas = {}, reveladas = {};
     let nivelAtual = "", secaoAtual = "todas";

@@ -67,9 +67,12 @@
   <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/nav.js"></script>
+  <script src="../assets/js/guest.js"></script>
   <script>
-    Auth.requireLogin();
     renderNav("quiz");
+
+    // Modo visitante: so A1 com as primeiras 20 questoes; outros niveis com cadeado
+    let isGuest = true;
 
     let level = "all";
     let quizData = {}; // {A1: [...questions], A2: [...], ...}
@@ -88,10 +91,14 @@
     const R2 = "https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
 
     async function init() {
+      isGuest = await Guest.check();
+
       // Load quiz counts from generated JSONs
       const levels = ["A1","A2","B1","B2","C1","C2"];
-      let btns = `<button class="lvl-btn active" onclick="setLevel('all')">🎲 Misturado</button>`;
-      
+      let btns = isGuest
+        ? `<button class="lvl-btn" onclick="location.href='planos.html'">🔒 Misturado</button>`
+        : `<button class="lvl-btn active" onclick="setLevel('all')">🎲 Misturado</button>`;
+
       for (const lv of levels) {
         try {
           // Try R2 first, fallback to local
@@ -99,16 +106,27 @@
           if (!r || !r.ok) r = await fetch(`../data/quiz_${lv.toLowerCase()}.json`);
           const data = await r.json();
           quizData[lv] = data.questoes || [];
+          // Visitante: so A1 liberado, limitado as primeiras questoes
+          if (isGuest) {
+            if (lv === "A1") quizData[lv] = quizData[lv].slice(0, AFB_FREE_LIMIT);
+            else quizData[lv] = [];
+          }
           quizCounts[lv] = quizData[lv].length;
-          btns += `<button class="lvl-btn" onclick="setLevel('${lv}')">${lv} <small>(${quizCounts[lv]})</small></button>`;
+          if (isGuest && lv !== "A1") {
+            btns += `<button class="lvl-btn" onclick="location.href='planos.html'">${lv} <small>🔒 500</small></button>`;
+          } else {
+            btns += `<button class="lvl-btn ${isGuest && lv === "A1" ? "active" : ""}" onclick="setLevel('${lv}')">${lv} <small>(${quizCounts[lv]}${isGuest ? " grátis" : ""})</small></button>`;
+          }
         } catch(e) {
           quizCounts[lv] = 0;
           btns += `<button class="lvl-btn" onclick="setLevel('${lv}')">${lv} <small>(em breve)</small></button>`;
         }
       }
-      
+
+      if (isGuest) level = "A1";
       document.getElementById("level-btns").innerHTML = btns;
-      document.getElementById("high-score").innerHTML = highScore ? `🏆 Recorde: ${highScore} pts` : "";
+      document.getElementById("high-score").innerHTML = (highScore ? `🏆 Recorde: ${highScore} pts` : "")
+        + (isGuest ? `<p class="muted" style="font-size:.8rem;margin-top:8px;">Você está jogando com ${AFB_FREE_LIMIT} questões grátis de 3.000 — <a href="planos.html" style="color:var(--color-primary-dark)"><b>desbloquear todas</b></a></p>` : "");
     }
 
     init();
