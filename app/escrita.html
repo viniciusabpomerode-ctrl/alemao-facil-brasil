@@ -43,12 +43,13 @@ textarea:focus{outline:none;border-color:var(--color-primary)}
 <script src="../assets/js/auth.js"></script>
 <script src="../assets/js/xp.js"></script>
 <script src="../assets/js/nav.js"></script>
+<script src="../assets/js/data.js"></script>
 <script>
 Auth.requireLogin();
 renderNav("escrita");
-var pool=[];
-var level="A1";
-var current=null;
+var R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
+var pool=[],level="A1",current=null,audio=new Audio();
+function fetcher(path){return fetch("../"+path).then(function(r){if(!r.ok)return fetch(R2+path);return r}).then(function(r){return r.json()})}
 
 function loadData(){
   pool=[];
@@ -57,7 +58,7 @@ function loadData(){
   var promises=[];
   for(var i=0;i<lvs.length;i++){
     (function(lv){
-      promises.push(fetch("../data/escrita/"+lv+".json").then(function(r){return r.json()}).then(function(data){
+      promises.push(fetcher("data/escrita/"+lv+".json").then(function(data){
         for(var j=0;j<data.length;j++){
           var s=data[j];
           pool.push({german:s.german,portuguese:s.portuguese,audio:null});
@@ -66,7 +67,7 @@ function loadData(){
     })(lvs[i]);
   }
   // Girias
-  promises.push(fetch("../data/girias.json").then(function(r){return r.json()}).then(function(g){
+  promises.push(fetcher("data/girias.json").then(function(g){
     var exps=g.expressions||[];
     for(var i=0;i<exps.length;i++){
       var e=exps[i];
@@ -74,7 +75,7 @@ function loadData(){
     }
   }).catch(function(){}));
   // Profissoes
-  promises.push(fetch("../data/profissoes.json").then(function(r){return r.json()}).then(function(p){
+  promises.push(fetcher("data/profissoes.json").then(function(p){
     var exps=p.expressions||[];
     for(var i=0;i<exps.length;i++){
       var phs=exps[i].phrases||[];
@@ -100,7 +101,12 @@ function nextSentence(){
   current=pool[Math.floor(Math.random()*pool.length)];
   document.getElementById("german").textContent=current.german;
   var pb=document.getElementById("playbtn");
-  if(current.audio){pb.style.display="inline";pb.onclick=function(){var a=new Audio();var u=current.audio;if(u.indexOf("http")!==0)u="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/"+u;a.src=u;a.play();};}else{pb.style.display="none";}
+  if(current.audio){pb.style.display="inline";pb.onclick=function(){
+    var played=false;
+    var r2url=current.audio;if(r2url.indexOf("http")!==0)r2url=R2+r2url;
+    if(typeof AFBData!=="undefined"&&AFBData.signedAudioUrl){AFBData.signedAudioUrl(current.audio).then(function(url){if(url&&!played){audio.src=url;audio.play();played=true}}).catch(function(){})}
+    setTimeout(function(){if(!played){audio.src=r2url;audio.play()}},600);
+  };}else{pb.style.display="none";}
   document.getElementById("input").value="";
   document.getElementById("input").style.borderColor="";
   document.getElementById("transtext").textContent=current.portuguese||"";
