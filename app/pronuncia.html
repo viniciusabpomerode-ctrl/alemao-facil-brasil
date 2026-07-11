@@ -123,8 +123,8 @@ function show(){
   const s=withAudio[Math.floor(Math.random()*withAudio.length)];
   st.sentence=s;
   document.getElementById("german-text").textContent=s.german;
-  document.getElementById("source-tag").textContent=s.type==="verbo"?"🔤 "+s.portuguese:s.type;
-  document.getElementById("translation-hint").textContent=s.type==="verbo"?"":s.portuguese;
+  document.getElementById("source-tag").textContent=s.type==="verbo"?"🔤 conjugação":s.type;
+  document.getElementById("translation-hint").textContent=s.portuguese||"";
   document.getElementById("rec-panel").classList.remove("show");recordedBlob=null;
   document.getElementById("rec-btn").textContent="🎤 Gravar minha pronúncia";
   document.getElementById("rec-btn").classList.remove("recording");
