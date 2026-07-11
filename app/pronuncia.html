@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pronúncia — Alemão Fácil Brasil</title>
+<title>Pronuncia — Alemao Facil Brasil</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <style>
 .lvl-btn{padding:6px 14px;border-radius:20px;border:2px solid var(--border-light);background:transparent;font-weight:600;font-size:.82rem;cursor:pointer;color:var(--text-primary);font-family:inherit;margin:2px}
@@ -10,6 +10,13 @@
 .german{font-size:1.4rem;font-weight:700;margin:16px 0}
 .hint{color:var(--text-secondary);font-size:.9rem;margin:8px 0}
 .tag{font-size:.7rem;background:var(--brand-light);color:var(--brand);padding:2px 8px;border-radius:10px}
+.btn-rec{background:#f44336;color:#fff;border:none;padding:14px 28px;border-radius:14px;font-weight:700;cursor:pointer;font-size:1rem;width:100%;margin:8px 0;font-family:inherit}
+.btn-rec.recording{animation:pulse .8s infinite alternate}
+@keyframes pulse{from{box-shadow:0 0 8px #f44336}to{box-shadow:0 0 20px #f44336}}
+.rec-panel{padding:16px;border-radius:12px;background:var(--bg-secondary);border:1px solid var(--border-light);display:none;margin-top:8px}
+.rec-panel.show{display:block}
+.rec-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;margin:6px 0;background:var(--bg-secondary);border-radius:10px;border:1px solid var(--border-light);gap:8px}
+.rec-item .info{flex:1}.rec-item .text{font-weight:600;font-size:.85rem}.rec-item .date{font-size:.72rem;color:var(--text-secondary)}
 </style></head>
 <body>
 <div id="app-nav"></div>
@@ -26,8 +33,27 @@
 <div class="german" id="german"></div>
 <div class="tag" id="tag"></div>
 <div class="hint" id="hint"></div>
-<button class="btn btn-outline" id="play" style="margin:12px">🔊 Ouvir</button>
-<button class="btn btn-primary" id="next">▶ Proxima</button>
+<button class="btn btn-outline" id="play" style="margin:8px;width:100%">🔊 Ouvir original</button>
+<button class="btn-rec" id="rec">🎤 Gravar minha pronuncia</button>
+<div class="rec-panel" id="recpanel">
+<p style="font-weight:600;margin:0 0 8px">🎧 Sua gravacao:</p>
+<audio id="recplay" controls style="width:100%;margin-bottom:8px"></audio>
+<div style="display:flex;gap:8px">
+<button class="btn btn-primary btn-sm" id="save">💾 Salvar</button>
+<button class="btn btn-sm" id="discard" style="color:#f44">🗑️ Descartar</button>
+</div>
+</div>
+<button class="btn btn-primary" id="next" style="width:100%;margin-top:8px">▶ Proxima</button>
+</div>
+<div style="margin-top:30px">
+<h3>🎙️ Minhas Gravacoes</h3>
+<div id="recfilters" style="margin-bottom:12px">
+<button class="lvl-btn active" data-rt="all">📅 Tudo</button>
+<button class="lvl-btn" data-rt="today">☀️ Hoje</button>
+<button class="lvl-btn" data-rt="week">📆 7 dias</button>
+<button class="lvl-btn" data-rt="month">🗓️ 30 dias</button>
+</div>
+<div id="reclist"><div style="text-align:center;padding:20px;color:var(--text-secondary)">Nenhuma gravacao ainda</div></div>
 </div>
 </div>
 <script src="../assets/js/theme.js"></script>
@@ -37,68 +63,67 @@
 Auth.requireLogin();
 renderNav("pronuncia");
 var R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
-var pool=[];
-var level="all";
-var current=null;
-var audio=new Audio();
+var pool=[],level="all",current=null,audio=new Audio();
+var mediaRecorder=null,recordedBlob=null,recFilter="all";
+
+// IndexedDB
+function openDB(){
+  return new Promise(function(r,rej){
+    var req=indexedDB.open("afb_pron",1);
+    req.onupgradeneeded=function(e){e.target.result.createObjectStore("recs",{keyPath:"id"})};
+    req.onsuccess=function(){r(req.result)};
+    req.onerror=rej;
+  });
+}
+function putRec(rec){
+  return openDB().then(function(db){
+    return new Promise(function(r,rej){
+      var tx=db.transaction("recs","readwrite");
+      tx.objectStore("recs").put(rec);
+      tx.oncomplete=function(){r()};
+      tx.onerror=rej;
+    });
+  });
+}
+function getAllRecs(){
+  return openDB().then(function(db){
+    return new Promise(function(r,rej){
+      var tx=db.transaction("recs","readonly");
+      var req=tx.objectStore("recs").getAll();
+      req.onsuccess=function(){r(req.result)};
+      req.onerror=rej;
+    });
+  });
+}
+function delRec(id){
+  return openDB().then(function(db){
+    return new Promise(function(r,rej){
+      var tx=db.transaction("recs","readwrite");
+      tx.objectStore("recs").delete(id);
+      tx.oncomplete=function(){r()};
+      tx.onerror=rej;
+    });
+  });
+}
 
 function loadData(){
   pool=[];
   var lvs=level==="all"?["A1","A2","B1","B2","C1","C2"]:[level];
   fetch("../data/girias.json").then(function(r){return r.json()}).then(function(g){
     var exps=g.expressions||[];
-    for(var i=0;i<exps.length;i++){
-      var e=exps[i];
-      if(lvs.indexOf(e.level)>=0){
-        pool.push({german:e.german,portuguese:e.portuguese,type:"giria",audio:e.audio_url});
-      }
-    }
+    for(var i=0;i<exps.length;i++){var e=exps[i];if(lvs.indexOf(e.level)>=0)pool.push({german:e.german,portuguese:e.portuguese,type:"giria",audio:e.audio_url})}
     return fetch("../data/profissoes.json");
   }).then(function(r){return r.json()}).then(function(p){
     var exps=p.expressions||[];
-    for(var i=0;i<exps.length;i++){
-      var e=exps[i];
-      var phs=e.phrases||[];
-      for(var j=0;j<phs.length;j++){
-        var ph=phs[j];
-        if(lvs.indexOf(ph.level)>=0){
-          pool.push({german:ph.de,portuguese:ph.pt,type:"profissao",audio:ph.audio_url});
-        }
-      }
-    }
-    // Carrega dialogos de cada nivel
-    var dpromises=[];
-    for(var k=0;k<lvs.length;k++){
-      (function(lv){
-        dpromises.push(fetch("../data/cursos/"+lv+".json").then(function(r){return r.json()}).then(function(d){
-          var themes=d.dialog_themes||[];
-          for(var a=0;a<themes.length;a++){
-            var dialogs=themes[a].dialogs||[];
-            for(var b=0;b<dialogs.length;b++){
-              var sentences=dialogs[b].sentences||[];
-              for(var c=0;c<sentences.length;c++){
-                var s=sentences[c];
-                if(s.audio_url&&s.german_text)pool.push({german:s.german_text,portuguese:s.portuguese_translation,type:"dialogo",audio:s.audio_url});
-              }
-            }
-          }
-        }).catch(function(){}));
-      })(lvs[k]);
-    }
-    return Promise.all(dpromises);
+    for(var i=0;i<exps.length;i++){var e=exps[i];var phs=e.phrases||[];for(var j=0;j<phs.length;j++){var ph=phs[j];if(lvs.indexOf(ph.level)>=0)pool.push({german:ph.de,portuguese:ph.pt,type:"profissao",audio:ph.audio_url})}}
+    var dp=[];
+    for(var k=0;k<lvs.length;k++){(function(lv){dp.push(fetch("../data/cursos/"+lv+".json").then(function(r){return r.json()}).then(function(d){var themes=d.dialog_themes||[];for(var a=0;a<themes.length;a++){var dialogs=themes[a].dialogs||[];for(var b=0;b<dialogs.length;b++){var ss=dialogs[b].sentences||[];for(var c=0;c<ss.length;c++){var s=ss[c];if(s.audio_url&&s.german_text)pool.push({german:s.german_text,portuguese:s.portuguese_translation,type:"dialogo",audio:s.audio_url})}}}}).catch(function(){}))})(lvs[k])}
+    return Promise.all(dp);
   }).then(function(){
-    for(var i=pool.length-1;i>0;i--){
-      var j=Math.floor(Math.random()*(i+1));
-      var tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;
-    }
+    for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=pool[i];pool[i]=pool[j];pool[j]=tmp}
     document.getElementById("count").textContent=pool.length;
-    if(pool.length>0){
-      document.getElementById("card").style.display="";
-      nextSentence();
-    }
-  }).catch(function(e){
-    document.getElementById("count").textContent="0";
-  });
+    if(pool.length>0){document.getElementById("card").style.display="";nextSentence();}
+  }).catch(function(e){document.getElementById("count").textContent="0"});
 }
 
 function nextSentence(){
@@ -107,13 +132,48 @@ function nextSentence(){
   document.getElementById("german").textContent=current.german;
   document.getElementById("tag").textContent=current.type;
   document.getElementById("hint").textContent=current.portuguese||"";
+  document.getElementById("recpanel").classList.remove("show");
+  recordedBlob=null;
 }
 
 document.getElementById("play").onclick=function(){
   if(!current||!current.audio)return;
-  var url=current.audio;
-  if(url.indexOf("http")!==0)url=R2+url;
+  var url=current.audio;if(url.indexOf("http")!==0)url=R2+url;
   audio.src=url;audio.play();
+};
+
+document.getElementById("rec").onclick=function(){
+  if(mediaRecorder&&mediaRecorder.state==="recording"){mediaRecorder.stop();return}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    var chunks=[];
+    mediaRecorder=new MediaRecorder(stream,{mimeType:"audio/webm"});
+    mediaRecorder.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data)};
+    mediaRecorder.onstop=function(){
+      stream.getTracks().forEach(function(t){t.stop()});
+      recordedBlob=new Blob(chunks,{type:"audio/webm"});
+      document.getElementById("recplay").src=URL.createObjectURL(recordedBlob);
+      document.getElementById("recpanel").classList.add("show");
+    };
+    mediaRecorder.start();
+    document.getElementById("rec").textContent="⏹ Parar gravacao";
+    document.getElementById("rec").classList.add("recording");
+  }).catch(function(){alert("Permita o microfone!")});
+};
+
+document.getElementById("save").onclick=function(){
+  if(!recordedBlob||!current)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    putRec({id:"pron_"+Date.now(),text:current.german,ts:Date.now(),saved:true,base64:reader.result.split(",")[1]}).then(function(){
+      document.getElementById("recpanel").classList.remove("show");
+      renderRecs();
+    });
+  };
+  reader.readAsDataURL(recordedBlob);
+};
+
+document.getElementById("discard").onclick=function(){
+  recordedBlob=null;document.getElementById("recpanel").classList.remove("show");
 };
 
 document.getElementById("next").onclick=nextSentence;
@@ -122,12 +182,64 @@ document.getElementById("filters").onclick=function(e){
   if(e.target.classList.contains("lvl-btn")){
     var btns=document.querySelectorAll("#filters .lvl-btn");
     for(var i=0;i<btns.length;i++)btns[i].classList.remove("active");
-    e.target.classList.add("active");
-    level=e.target.dataset.l;
-    loadData();
+    e.target.classList.add("active");level=e.target.dataset.l;loadData();
   }
 };
 
-loadData();
+document.getElementById("recfilters").onclick=function(e){
+  if(e.target.classList.contains("lvl-btn")){
+    var btns=document.querySelectorAll("#recfilters .lvl-btn");
+    for(var i=0;i<btns.length;i++)btns[i].classList.remove("active");
+    e.target.classList.add("active");recFilter=e.target.dataset.rt;renderRecs();
+  }
+};
+
+function renderRecs(){
+  getAllRecs().then(function(all){
+    var now=Date.now();
+    // Clean old unsaved >24h
+    for(var i=0;i<all.length;i++){if(now-all[i].ts>86400000&&!all[i].saved)delRec(all[i].id)}
+    var recs=all.filter(function(r){return now-r.ts<=86400000||r.saved});
+    recs.sort(function(a,b){return b.ts-a.ts});
+    if(recFilter!=="all"){
+      recs=recs.filter(function(r){
+        if(recFilter==="today")return now-r.ts<86400000;
+        if(recFilter==="week")return now-r.ts<7*86400000;
+        if(recFilter==="month")return now-r.ts<30*86400000;
+        return true;
+      });
+    }
+    var el=document.getElementById("reclist");
+    if(!recs.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-secondary)">Nenhuma gravacao</div>';return}
+    var h="";
+    for(var i=0;i<recs.length;i++){
+      var r=recs[i];
+      h+='<div class="rec-item"><div class="info"><div class="text">'+(r.text||"").substring(0,70)+'</div><div class="date">'+new Date(r.ts).toLocaleString("pt-BR")+' '+(r.saved?"💾":"⏳24h")+'</div></div><div style="display:flex;gap:6px"><button class="btn btn-sm" onclick="playRec(\''+r.id+'\')">▶</button><button class="btn btn-sm" style="color:#f44" onclick="delRec(\''+r.id+'\');renderRecs()">🗑️</button></div></div>';
+    }
+    el.innerHTML=h;
+  });
+}
+
+function playRec(id){
+  getAllRecs().then(function(recs){
+    var r=recs.find(function(x){return x.id===id});
+    if(!r||!r.base64)return;
+    fetch("data:audio/webm;base64,"+r.base64).then(function(x){return x.blob()}).then(function(b){
+      document.getElementById("recplay").src=URL.createObjectURL(b);
+      document.getElementById("recpanel").classList.add("show");
+    });
+  });
+}
+
+// Auto-save on leave
+window.onbeforeunload=function(){
+  if(recordedBlob&&current){
+    var reader=new FileReader();
+    reader.onload=function(){putRec({id:"pron_"+Date.now(),text:current.german,ts:Date.now(),saved:false,base64:reader.result.split(",")[1]})};
+    reader.readAsDataURL(recordedBlob);
+  }
+};
+
+loadData();renderRecs();
 </script>
 </body></html>
