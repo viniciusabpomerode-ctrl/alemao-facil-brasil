@@ -124,21 +124,23 @@ function show(){
   document.getElementById("rec-btn").classList.remove("recording");
 }
 
-// Play original
-document.getElementById("play-orig-btn").addEventListener("click",async()=>{
-  const s=st.sentence;if(!s||!s.audio)return alert("Sem áudio");
+// Play original — Supabase + R2 em paralelo (quem responder primeiro toca)
+document.getElementById("play-orig-btn").addEventListener("click",()=>{
+  const s=st.sentence;if(!s||!s.audio)return;
   const R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
-  
-  // Tenta Supabase signed URL (verbos/dialogos), fallback R2 (girias/profissoes)
-  if(typeof AFBData!=="undefined"&&AFBData.signedAudioUrl){
-    try{
-      const url=await AFBData.signedAudioUrl(s.audio);
-      if(url){origAudio.src=url;origAudio.play().catch(()=>{});return}
-    }catch(e){}
-  }
-  // Fallback R2
   const r2url=s.audio.startsWith("http")?s.audio:R2+s.audio;
-  origAudio.src=r2url;origAudio.play().catch(()=>alert("Erro ao tocar"));
+  let played=false;
+  
+  // Supabase (com signed URL)
+  if(typeof AFBData!=="undefined"&&AFBData.signedAudioUrl){
+    AFBData.signedAudioUrl(s.audio).then(url=>{
+      if(url&&!played){origAudio.src=url;origAudio.play().catch(()=>{});played=true}
+    }).catch(()=>{});
+  }
+  // R2 fallback (dispara em paralelo)
+  setTimeout(()=>{
+    if(!played){origAudio.src=r2url;origAudio.play().catch(()=>{})}
+  },600);
 });
 
 // Record
