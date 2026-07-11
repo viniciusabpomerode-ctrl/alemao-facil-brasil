@@ -98,7 +98,12 @@ async function buildPool(){
       const d=await AFBData.nivel(lv);
       for(const th of d.dialog_themes||[]){for(const dg of th.dialogs||[]){for(const s of dg.sentences||[]){if(s.audio_url)pool.push({german:s.german_text,portuguese:s.portuguese_translation,level:lv,type:"dialogo",audio:s.audio_url})}}}
       const verbs=await AFBData.verbos(lv);
-      for(const v of verbs){for(const ex of v.examples||[]){const g=ex.example_sentence_german||ex.german;if(ex.audio_url&&g)pool.push({german:g,portuguese:ex.example_sentence_portuguese||ex.portuguese||"",level:lv,type:"verbo",audio:ex.audio_url})}}
+      for(const v of verbs){for(const ex of v.examples||[]){
+        // Audio do verbo é da conjugação, não da frase exemplo
+        if(ex.audio_url&&ex.conjugated_verb)pool.push({german:ex.conjugated_verb.replace(/\s*\(.*?\)\s*/g,''),portuguese:(ex.pronoun||"")+" - "+v.base_verb,level:lv,type:"verbo",audio:ex.audio_url});
+        // Frase completa (sem audio individual, bom pra contexto)
+        const sg=ex.example_sentence_german;if(sg)pool.push({german:sg,portuguese:ex.example_sentence_portuguese||"",level:lv,type:"frase",audio:null});
+      }}
     }catch(e){}
   }
   // Girias
@@ -114,11 +119,12 @@ async function buildPool(){
 
 function show(){
   const withAudio=st.pool.filter(p=>p.audio);
-  const s=withAudio.length?withAudio[Math.floor(Math.random()*withAudio.length)]:st.pool[0];
+  if(!withAudio.length){document.getElementById("german-text").textContent="Nenhuma frase com áudio neste nível.";return}
+  const s=withAudio[Math.floor(Math.random()*withAudio.length)];
   st.sentence=s;
   document.getElementById("german-text").textContent=s.german;
-  document.getElementById("source-tag").textContent=s.type;
-  document.getElementById("translation-hint").textContent=s.portuguese;
+  document.getElementById("source-tag").textContent=s.type==="verbo"?"🔤 "+s.portuguese:s.type;
+  document.getElementById("translation-hint").textContent=s.type==="verbo"?"":s.portuguese;
   document.getElementById("rec-panel").classList.remove("show");recordedBlob=null;
   document.getElementById("rec-btn").textContent="🎤 Gravar minha pronúncia";
   document.getElementById("rec-btn").classList.remove("recording");
