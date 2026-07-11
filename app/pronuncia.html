@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pronúncia — Alemão Fácil Brasil</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <style>
@@ -12,28 +10,24 @@
 .german{font-size:1.4rem;font-weight:700;margin:16px 0}
 .hint{color:var(--text-secondary);font-size:.9rem;margin:8px 0}
 .tag{font-size:.7rem;background:var(--brand-light);color:var(--brand);padding:2px 8px;border-radius:10px}
-</style>
-</head>
+</style></head>
 <body>
 <div id="app-nav"></div>
 <div class="container" style="padding-top:28px;max-width:700px">
-<h2>🎤 Pronúncia</h2>
-<p><strong id="pool-count">...</strong> frases com áudio</p>
+<h2>🎤 Pronuncia</h2>
+<p><strong id="count">...</strong> frases com audio</p>
 <div id="filters" style="margin:10px 0">
 <button class="lvl-btn active" data-l="all">Todos</button>
-<button class="lvl-btn" data-l="A1">A1</button>
-<button class="lvl-btn" data-l="A2">A2</button>
-<button class="lvl-btn" data-l="B1">B1</button>
-<button class="lvl-btn" data-l="B2">B2</button>
-<button class="lvl-btn" data-l="C1">C1</button>
-<button class="lvl-btn" data-l="C2">C2</button>
+<button class="lvl-btn" data-l="A1">A1</button><button class="lvl-btn" data-l="A2">A2</button>
+<button class="lvl-btn" data-l="B1">B1</button><button class="lvl-btn" data-l="B2">B2</button>
+<button class="lvl-btn" data-l="C1">C1</button><button class="lvl-btn" data-l="C2">C2</button>
 </div>
 <div class="card" id="card" style="display:none">
 <div class="german" id="german"></div>
 <div class="tag" id="tag"></div>
 <div class="hint" id="hint"></div>
 <button class="btn btn-outline" id="play" style="margin:12px">🔊 Ouvir</button>
-<button class="btn btn-primary" id="next">▶ Próxima</button>
+<button class="btn btn-primary" id="next">▶ Proxima</button>
 </div>
 </div>
 <script src="../assets/js/theme.js"></script>
@@ -42,86 +36,77 @@
 <script>
 Auth.requireLogin();
 renderNav("pronuncia");
+var R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
+var pool=[];
+var level="all";
+var current=null;
+var audio=new Audio();
 
-var R2 = "https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
-var pool = [];
-var level = "all";
-var current = null;
-var audio = new Audio();
-
-async function load() {
-  pool = [];
-  var lvs = level === "all" ? ["A1","A2","B1","B2","C1","C2"] : [level];
-  
-  var r1 = await fetch("../data/girias.json");
-  if (r1.ok) {
-    var g = await r1.json();
-    var exps = g.expressions || [];
-    for (var i = 0; i < exps.length; i++) {
-      var e = exps[i];
-      if (lvs.indexOf(e.level) >= 0) {
-        pool.push({german: e.german, portuguese: e.portuguese, type: "giria", audio: e.audio_url});
+function loadData(){
+  pool=[];
+  var lvs=level==="all"?["A1","A2","B1","B2","C1","C2"]:[level];
+  fetch("../data/girias.json").then(function(r){return r.json()}).then(function(g){
+    var exps=g.expressions||[];
+    for(var i=0;i<exps.length;i++){
+      var e=exps[i];
+      if(lvs.indexOf(e.level)>=0){
+        pool.push({german:e.german,portuguese:e.portuguese,type:"giria",audio:e.audio_url});
       }
     }
-  }
-  
-  var r2 = await fetch("../data/profissoes.json");
-  if (r2.ok) {
-    var p = await r2.json();
-    var exps2 = p.expressions || [];
-    for (var i = 0; i < exps2.length; i++) {
-      var e = exps2[i];
-      var phrases = e.phrases || [];
-      for (var j = 0; j < phrases.length; j++) {
-        var ph = phrases[j];
-        if (lvs.indexOf(ph.level) >= 0) {
-          pool.push({german: ph.de, portuguese: ph.pt, type: "profissao", audio: ph.audio_url});
+    return fetch("../data/profissoes.json");
+  }).then(function(r){return r.json()}).then(function(p){
+    var exps=p.expressions||[];
+    for(var i=0;i<exps.length;i++){
+      var e=exps[i];
+      var phs=e.phrases||[];
+      for(var j=0;j<phs.length;j++){
+        var ph=phs[j];
+        if(lvs.indexOf(ph.level)>=0){
+          pool.push({german:ph.de,portuguese:ph.pt,type:"profissao",audio:ph.audio_url});
         }
       }
     }
-  }
-  
-  for (var i = pool.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = pool[i];
-    pool[i] = pool[j];
-    pool[j] = tmp;
-  }
-  
-  document.getElementById("pool-count").textContent = pool.length;
-  if (pool.length) {
-    document.getElementById("card").style.display = "";
-    next();
-  }
+    for(var i=pool.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;
+    }
+    document.getElementById("count").textContent=pool.length;
+    if(pool.length>0){
+      document.getElementById("card").style.display="";
+      nextSentence();
+    }
+  }).catch(function(e){
+    document.getElementById("count").textContent="0";
+  });
 }
 
-function next() {
-  current = pool[Math.floor(Math.random() * pool.length)];
-  document.getElementById("german").textContent = current.german;
-  document.getElementById("tag").textContent = current.type;
-  document.getElementById("hint").textContent = current.portuguese || "";
+function nextSentence(){
+  if(pool.length===0)return;
+  current=pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById("german").textContent=current.german;
+  document.getElementById("tag").textContent=current.type;
+  document.getElementById("hint").textContent=current.portuguese||"";
 }
 
-document.getElementById("play").addEventListener("click", function() {
-  if (!current || !current.audio) return;
-  var url = current.audio.indexOf("http") === 0 ? current.audio : R2 + current.audio;
-  audio.src = url;
-  audio.play();
-});
+document.getElementById("play").onclick=function(){
+  if(!current||!current.audio)return;
+  var url=current.audio;
+  if(url.indexOf("http")!==0)url=R2+url;
+  audio.src=url;audio.play();
+};
 
-document.getElementById("next").addEventListener("click", next);
+document.getElementById("next").onclick=nextSentence;
 
-document.getElementById("filters").addEventListener("click", function(e) {
-  if (e.target.classList.contains("lvl-btn")) {
-    var btns = document.querySelectorAll("#filters .lvl-btn");
-    for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+document.getElementById("filters").onclick=function(e){
+  if(e.target.classList.contains("lvl-btn")){
+    var btns=document.querySelectorAll("#filters .lvl-btn");
+    for(var i=0;i<btns.length;i++)btns[i].classList.remove("active");
     e.target.classList.add("active");
-    level = e.target.dataset.l;
-    load();
+    level=e.target.dataset.l;
+    loadData();
   }
-});
+};
 
-load();
+loadData();
 </script>
-</body>
-</html>
+</body></html>
