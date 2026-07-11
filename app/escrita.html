@@ -47,8 +47,6 @@
 <script src="../assets/js/auth.js"></script>
 <script src="../assets/js/xp.js"></script>
 <script src="../assets/js/nav.js"></script>
-<script src="../assets/js/i18n.js"></script>
-<script src="../assets/js/data.js"></script>
 <script>
 Auth.requireLogin();renderNav("escrita");
 
@@ -58,19 +56,14 @@ const st={level:"A1",pool:[],sentence:null};
 async function buildPool(){
   const pool=[],lvs=st.level==="random"?["A1","A2","B1","B2","C1","C2"]:[st.level];
   
-  // Dialogos + Verbos + Escrita (via AFBData)
+  // Escrita nativa
   for(const lv of lvs){
-    try{const data=await AFBData.load("escrita/"+lv);for(const s of(Array.isArray(data)?data:[]))pool.push({german:s.german,portuguese:s.portuguese||I18n.field(s,'portuguese'),level:lv})}catch(e){}
-    try{
-      const d=await AFBData.nivel(lv);
-      for(const th of d.dialog_themes||[]){for(const dg of th.dialogs||[]){for(const s of dg.sentences||[]){pool.push({german:s.german_text,portuguese:s.portuguese_translation,level:lv})}}}
-      const verbs=await AFBData.verbos(lv);
-      for(const v of verbs){for(const ex of v.examples||[]){const g=ex.example_sentence_german||ex.german;if(g)pool.push({german:g,portuguese:ex.example_sentence_portuguese||ex.portuguese||"",level:lv})}}
-    }catch(e){}
+    try{let r=await fetch("../data/escrita/"+lv+".json");if(r.ok){for(const s of await r.json())pool.push({german:s.german,portuguese:s.portuguese,level:lv})}}catch(e){}
   }
-  // Girias + Profissoes
-  try{const g=await AFBData.load("girias");for(const e of g.expressions||[]){if(lvs.includes(e.level))pool.push({german:e.german,portuguese:e.portuguese,level:e.level})}}catch(e){}
-  try{const p=await AFBData.load("profissoes");for(const e of p.expressions||[]){for(const ph of e.phrases||[]){if(lvs.includes(ph.level))pool.push({german:ph.de,portuguese:ph.pt,level:ph.level})}}}catch(e){}
+  // Girias
+  try{let r=await fetch("../data/girias.json");if(r.ok){const g=await r.json();for(const e of g.expressions||[]){if(lvs.includes(e.level))pool.push({german:e.german,portuguese:e.portuguese,level:e.level})}}}catch(e){}
+  // Profissoes
+  try{let r=await fetch("../data/profissoes.json");if(r.ok){const p=await r.json();for(const e of p.expressions||[]){for(const ph of e.phrases||[]){if(lvs.includes(ph.level))pool.push({german:ph.de,portuguese:ph.pt,level:ph.level})}}}catch(e){}
 
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
   st.pool=pool;

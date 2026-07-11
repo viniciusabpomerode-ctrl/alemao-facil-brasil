@@ -72,8 +72,6 @@
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/js/auth.js"></script>
 <script src="../assets/js/nav.js"></script>
-<script src="../assets/js/i18n.js"></script>
-<script src="../assets/js/data.js"></script>
 <script src="../assets/js/saved_r2.js"></script>
 <script>
 Auth.requireLogin();renderNav("pronuncia");
@@ -82,7 +80,6 @@ const st={level:"A1",pool:[],sentence:null};
 let recFilter="all",mediaRecorder=null,recordedBlob=null;
 const origAudio=new Audio();
 
-// IndexedDB
 function openDB(){return new Promise((r,rej)=>{const req=indexedDB.open("afb_pronuncia",1);req.onupgradeneeded=e=>e.target.result.createObjectStore("recs",{keyPath:"id"});req.onsuccess=()=>r(req.result);req.onerror=rej})}
 async function putRec(r){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction("recs","readwrite");tx.objectStore("recs").put(r);tx.oncomplete=()=>res();tx.onerror=rej})}
 async function getAllRecs(){const db=await openDB();return new Promise((r,rej)=>{const tx=db.transaction("recs","readonly");const req=tx.objectStore("recs").getAll();req.onsuccess=()=>r(req.result);req.onerror=rej})}
@@ -90,26 +87,21 @@ async function delRec(id){const db=await openDB();return new Promise((r,rej)=>{c
 
 async function buildPool(){
   const pool=[],lvs=st.level==="random"?["A1","A2","B1","B2","C1","C2"]:[st.level];
-  const R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
-  
-  // Dialogos (frases completas com audio) + Verbos (so frases exemplo)
-  for(const lv of lvs){
-    try{
-      const d=await AFBData.nivel(lv);
-      for(const th of d.dialog_themes||[]){for(const dg of th.dialogs||[]){for(const s of dg.sentences||[]){if(s.audio_url&&s.german_text)pool.push({german:s.german_text,portuguese:s.portuguese_translation,level:lv,type:"dialogo",audio:s.audio_url})}}}
-      const verbs=await AFBData.verbos(lv);
-      for(const v of verbs){for(const ex of v.examples||[]){
-        const g=ex.example_sentence_german;if(g)pool.push({german:g,portuguese:ex.example_sentence_portuguese||"",level:lv,type:"frase",audio:null});
+  // Girias
+  try{let r=await fetch("../data/girias.json");if(r.ok){const g=await r.json();for(const e of g.expressions||[]){if(lvs.includes(e.level))pool.push({german:e.german,portuguese:e.portuguese,level:e.level,type:"giria",audio:e.audio_url})}}}catch(e){}
+  // Profissoes
+  try{let r=await fetch("../data/profissoes.json");if(r.ok){const p=await r.json();for(const e of p.expressions||[]){for(const ph of e.phrases||[]){if(lvs.includes(ph.level))pool.push({german:ph.de,portuguese:ph.pt,level:ph.level,type:"profissao",audio:ph.audio_url})}}}catch(e){}
+
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+  st.pool=pool;
+  document.getElementById("pool-count").textContent=pool.length.toLocaleString();
+  if(pool.length){document.getElementById("practice-area").style.display="";show()}
+}
       }}
     }catch(e){}
   }
     }catch(e){}
   }
-  // Girias
-  try{let r=await fetch("../data/girias.json");if(!r.ok)r=await fetch(R2+"data/girias.json");if(r.ok){const g=await r.json();for(const e of g.expressions||[]){if(lvs.includes(e.level)&&e.audio_url)pool.push({german:e.german,portuguese:e.portuguese,level:e.level,type:"giria",audio:e.audio_url})}}}catch(e){}
-  // Profissoes
-  try{let r=await fetch("../data/profissoes.json");if(!r.ok)r=await fetch(R2+"data/profissoes.json");if(r.ok){const p=await r.json();for(const e of p.expressions||[]){for(const ph of e.phrases||[]){if(lvs.includes(ph.level))pool.push({german:ph.de,portuguese:ph.pt,level:ph.level,type:"profissao",audio:ph.audio_url})}}}}catch(e){}
-
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
   st.pool=pool;
   document.getElementById("pool-count").textContent=pool.length.toLocaleString();
