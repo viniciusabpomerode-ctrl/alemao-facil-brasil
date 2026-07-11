@@ -215,10 +215,12 @@
           <input type="text" id="search-input" placeholder="Pesquisar qualquer palavra, verbo, diálogo...">
         </div>
         <div class="env-switch" id="env-switch">
-          <button data-env="moderno">◆ Moderno</button>
-          <button data-env="vikings">🛡️ Vikings</button>
-          <button data-env="aurora">🌌 Aurora</button>
+          <button data-env="moderno">◆</button>
+          <button data-env="vikings">🛡️</button>
+          <button data-env="aurora">🌌</button>
         </div>
+        <button class="btn btn-ghost btn-sm" id="daynight-btn" title="Alternar dia/noite" style="padding:5px 8px;font-size:.85rem;min-height:auto;">🌙</button>
+        <button class="btn btn-ghost btn-sm" id="sfx-toggle" title="Som" style="padding:5px 8px;font-size:.85rem;min-height:auto;">🔊</button>
         <div id="user-actions"></div>
       </div>
 
@@ -287,14 +289,14 @@
 
       <h3 class="section-title mi-stagger" style="margin:0 0 14px;font-size:clamp(1rem,1.5vw,1.15rem);">O que você quer estudar hoje?</h3>
       <div class="study-grid">
-        <a href="app/cursos.html?tab=verbos" class="card mi-card mi-stagger stat-tile"><div class="ico">📖</div><b class="mi-num" data-target="38802">0</b><span>frases de verbo</span></a>
-        <a href="app/cursos.html" class="card mi-card mi-stagger stat-tile"><div class="ico">💬</div><b class="mi-num" data-target="1225">0</b><span>diálogos</span></a>
-        <a href="app/musica.html" class="card mi-card mi-stagger stat-tile"><div class="ico">🎵</div><b class="mi-num" data-target="89">0</b><span>músicas</span></a>
-        <a href="app/expressoes.html" class="card mi-card mi-stagger stat-tile"><div class="ico">🗣️</div><b class="mi-num" data-target="1509">0</b><span>gírias</span></a>
-        <a href="app/profissoes.html" class="card mi-card mi-stagger stat-tile"><div class="ico">💼</div><b class="mi-num" data-target="1200">0</b><span>frases profissões</span></a>
-        <a href="app/quiz.html" class="card mi-card mi-stagger stat-tile"><div class="ico">⚡</div><b class="mi-num" data-target="3000">0</b><span>questões de quiz</span></a>
-        <a href="app/simulado.html" class="card mi-card mi-stagger stat-tile"><div class="ico">📝</div><b class="mi-num" data-target="598">0</b><span>simulado Goethe</span></a>
-        <a href="app/escrita.html" class="card mi-card mi-stagger stat-tile"><div class="ico">✍️</div><b class="mi-num" data-target="609">0</b><span>frases de escrita</span></a>
+        <a href="app/cursos.html?tab=verbos" class="card mi-card mi-stagger stat-tile"><div class="ico">📖</div><b class="mi-num" data-target="1300">0</b><span>1.300+ Verbos</span><small style="display:block;font-size:.6rem;color:var(--text-secondary);margin-top:1px;">38 mil frases conjugadas</small></a>
+        <a href="app/cursos.html" class="card mi-card mi-stagger stat-tile"><div class="ico">💬</div><b class="mi-num" data-target="1225">0</b><span>Diálogos</span><small style="display:block;font-size:.6rem;color:var(--text-secondary);margin-top:1px;">do A1 ao C2</small></a>
+        <a href="app/musica.html" class="card mi-card mi-stagger stat-tile"><div class="ico">🎵</div><b class="mi-num" data-target="89">0</b><span>Músicas</span><small style="display:block;font-size:.6rem;color:var(--text-secondary);margin-top:1px;">com letras traduzidas</small></a>
+        <a href="app/expressoes.html" class="card mi-card mi-stagger stat-tile"><div class="ico">🗣️</div><b class="mi-num" data-target="1509">0</b><span>Gírias</span><small style="display:block;font-size:.6rem;color:var(--text-secondary);margin-top:1px;">alemão do dia a dia</small></a>
+        <a href="app/profissoes.html" class="card mi-card mi-stagger stat-tile"><div class="ico">💼</div><b class="mi-num" data-target="1200">0</b><span>Profissões</span><small style="display:block;font-size:.6rem;color:var(--text-secondary);margin-top:1px;">24 carreiras</small></a>
+        <a href="app/quiz.html" class="card mi-card mi-stagger stat-tile"><div class="ico">⚡</div><b class="mi-num" data-target="3000">0</b><span>Quiz</span><small style="display:block;font-size:.6rem;color:var(--text-secondary);margin-top:1px;">teste seus reflexos</small></a>
+        <a href="app/simulado.html" class="card mi-card mi-stagger stat-tile"><div class="ico">📝</div><b class="mi-num" data-target="598">0</b><span>Simulado Goethe</span><small style="display:block;font-size:.6rem;color:var(--text-secondary);margin-top:1px;">prova oficial</small></a>
+        <a href="app/escrita.html" class="card mi-card mi-stagger stat-tile"><div class="ico">✍️</div><b class="mi-num" data-target="609">0</b><span>Escrita</span><small style="display:block;font-size:.6rem;color:var(--text-secondary);margin-top:1px;">treine redação</small></a>
       </div>
 
       <div class="card progress-strip mi-stagger" id="progress-card">
@@ -316,6 +318,7 @@
   </div>
 
   <script src="assets/js/theme.js"></script>
+  <script src="assets/js/sfx.js"></script>
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/xp.js"></script>
   <script src="assets/js/guest.js"></script>
@@ -336,20 +339,52 @@
       }));
     })();
 
+    // ── Day/Night toggle ──
+    (function() {
+      var btn = document.getElementById('daynight-btn');
+      function update() {
+        var isDay = Theme.getMode() === 'day';
+        btn.textContent = isDay ? '☀️' : '🌙';
+        btn.title = isDay ? 'Modo dia · clique para noturno' : 'Modo noturno · clique para dia';
+      }
+      btn.addEventListener('click', function() {
+        Theme.toggleMode();
+        update();
+        if (typeof SFX !== 'undefined') SFX.click();
+        paintEnv();
+      });
+      update();
+    })();
+
+    // ── Sound toggle ──
+    (function() {
+      var btn = document.getElementById('sfx-toggle');
+      function update() { btn.textContent = SFX.isMuted() ? '🔇' : '🔊'; }
+      btn.addEventListener('click', function() { SFX.toggle(); update(); });
+      update();
+    })();
+
     // ── Ambiente (tema) ──
     function paintEnv() {
       const meta = Theme.meta();
+      const isDay = Theme.getMode() === 'day';
       document.getElementById("brand-icon").textContent = meta.icon;
       document.querySelectorAll("#env-switch button").forEach((b) => {
         b.classList.toggle("active", b.dataset.env === Theme.get());
       });
       const fx = document.getElementById("hero-fx");
       if (Theme.get() === "vikings") {
-        fx.style.background = "radial-gradient(ellipse at 50% -20%, rgba(184,135,74,.14), transparent 65%)";
+        fx.style.background = isDay
+          ? "radial-gradient(ellipse at 50% -20%, rgba(154,110,53,.18), transparent 65%)"
+          : "radial-gradient(ellipse at 50% -20%, rgba(184,135,74,.14), transparent 65%)";
       } else if (Theme.get() === "aurora") {
-        fx.style.background = "linear-gradient(180deg, rgba(180,210,255,.35), rgba(220,190,240,.15) 55%, transparent 85%)";
+        fx.style.background = isDay
+          ? "linear-gradient(180deg, rgba(180,210,255,.35), rgba(220,190,240,.15) 55%, transparent 85%)"
+          : "linear-gradient(180deg, rgba(120,180,210,.25), rgba(150,120,210,.15) 55%, transparent 85%)";
       } else {
-        fx.style.background = "radial-gradient(ellipse at 80% -20%, rgba(111,155,209,.12), transparent 60%)";
+        fx.style.background = isDay
+          ? "radial-gradient(ellipse at 80% -20%, rgba(74,122,181,.15), transparent 60%)"
+          : "radial-gradient(ellipse at 80% -20%, rgba(111,155,209,.12), transparent 60%)";
       }
     }
     document.querySelectorAll("#env-switch button").forEach((b) => {
@@ -414,6 +449,7 @@
       document.getElementById("wave").style.opacity = playing ? "1" : ".5";
       if (playing && !lofiFrame.src) loadStation(currentStation);
       lofiFrame.style.display = playing ? "block" : "none";
+      SFX.ambientChime();
     });
     document.getElementById("expand-toggle").addEventListener("click", (e) => {
       const panel = document.getElementById("expand-panel");
@@ -460,10 +496,12 @@
       if (pomoRunning) {
         pomoRunning = false; clearInterval(pomoTimer);
         e.currentTarget.textContent = "Continuar";
+        SFX.click();
         return;
       }
       pomoRunning = true;
       e.currentTarget.textContent = "Pausar";
+      SFX.correct();
       const total = pomoMin * 60;
       pomoTimer = setInterval(() => {
         pomoSecsLeft--;
