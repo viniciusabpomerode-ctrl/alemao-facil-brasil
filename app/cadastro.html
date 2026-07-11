@@ -59,20 +59,5 @@
       });
     });
   </script>
-      const password2 = document.getElementById("password2").value;
-
-      if (password !== password2) {
-        showError("As senhas não coincidem.");
-        return;
-      }
-
-      const result = await Auth.signup({ name, email, password });
-      if (!result.ok) {
-        showError(result.error);
-        return;
-      }
-      window.location.href = "/app/dashboard.html";
-    });
-  </script>
 </body>
 </html>

@@ -97,11 +97,9 @@ const Auth = {
   updateCurrentUser: function(patch){},
 
   requireLogin: function(){
-    // No modo visitante, nao redireciona — so marca que é guest
-    if (window._guestMode) return;
     Auth._ready().then(function(){
-      var u = Auth.currentUser();
-      if (!u) window.location.href = AFB_BASE + "/app/login.html";
+      var u=Auth.currentUser();
+      if(!u)window.location.href=AFB_BASE+"/app/login.html";
     });
   },
 

@@ -16,7 +16,7 @@ textarea:focus{outline:none;border-color:var(--color-primary)}
 <div id="app-nav"></div>
 <div class="container" style="padding-top:28px;max-width:700px">
 <h2>✍️ Escrita</h2>
-<p><strong id="count">...</strong> frases disponiveis</p>
+<p id="count-line"><strong id="count">...</strong> frases disponiveis</p>
 <div id="filters" style="margin:10px 0">
 <button class="lvl-btn" data-l="random">🎲 Aleatorio</button>
 <button class="lvl-btn active" data-l="A1">A1</button><button class="lvl-btn" data-l="A2">A2</button>
@@ -44,11 +44,12 @@ textarea:focus{outline:none;border-color:var(--color-primary)}
 <script src="../assets/js/xp.js"></script>
 <script src="../assets/js/nav.js"></script>
 <script src="../assets/js/data.js"></script>
+<script src="../assets/js/guest.js"></script>
 <script>
-Auth.requireLogin();
 renderNav("escrita");
 var R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
 var pool=[],level="A1",current=null,audio=new Audio();
+var isGuest=true;
 function fetcher(path){return fetch("../"+path).then(function(r){if(!r.ok)return fetch(R2+path);return r}).then(function(r){return r.json()})}
 
 function loadData(){
@@ -87,11 +88,20 @@ function loadData(){
   }).catch(function(){}));
 
   Promise.all(promises).then(function(){
+    var totalDisponivel=pool.length;
+    if(isGuest&&pool.length>AFB_FREE_LIMIT){
+      // Visitante pratica com as primeiras frases; resto e Premium
+      pool=pool.slice(0,AFB_FREE_LIMIT);
+    }
     for(var i=pool.length-1;i>0;i--){
       var j=Math.floor(Math.random()*(i+1));
       var tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;
     }
-    document.getElementById("count").textContent=pool.length;
+    if(isGuest&&totalDisponivel>AFB_FREE_LIMIT){
+      document.getElementById("count-line").innerHTML="<strong>"+pool.length+"</strong> de "+totalDisponivel+" frases liberadas · <a href=\"planos.html\" style=\"color:var(--color-primary-dark)\"><b>🔒 desbloquear todas</b></a>";
+    }else{
+      document.getElementById("count").textContent=pool.length;
+    }
     if(pool.length>0){document.getElementById("card").style.display="";nextSentence();}
   });
 }
@@ -146,6 +156,6 @@ document.getElementById("filters").onclick=function(e){
   }
 };
 
-loadData();
+Guest.check().then(function(g){isGuest=g;loadData();});
 </script>
 </body></html>

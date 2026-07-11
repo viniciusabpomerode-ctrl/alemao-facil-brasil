@@ -11,13 +11,12 @@
 
   <div class="container" style="padding-top:28px;">
     <h2 class="mt-0">Cursos</h2>
-    <p class="muted">Escolha um nível para ver diálogos, podcasts e verbos.</p>
+    <p class="muted">Escolha um nível para ver diálogos e verbos.</p>
 
     <div class="grid grid-4" id="level-tabs" style="gap:12px;"></div>
 
     <div class="tabs" style="margin-top:28px;">
       <button class="tab-btn active" data-tab="dialogos">💬 Diálogos</button>
-      <button class="tab-btn" data-tab="podcasts">🎙️ Podcasts</button>
       <button class="tab-btn" data-tab="verbos">📖 Verbos</button>
     </div>
 
@@ -36,7 +35,7 @@
 
     const params = new URLSearchParams(location.search);
     let currentLevel = params.get("nivel") || "A1";
-    let currentTab = ["dialogos", "podcasts", "verbos"].includes(params.get("tab")) ? params.get("tab") : "dialogos";
+    let currentTab = ["dialogos", "verbos"].includes(params.get("tab")) ? params.get("tab") : "dialogos";
     document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === currentTab));
     let levelData = null;   // { dialog_themes, podcasts } do nivel atual
     let verbsData = null;   // verbos do nivel atual (carregado so quando precisa)
@@ -91,8 +90,8 @@
         if (!verbsData.length) { el.innerHTML = emptyMsg(); return; }
         let vIdx = 0;
         el.innerHTML = `<div class="grid grid-4">${verbsData.map((v) => {
-          if (isGuest && vIdx++ >= AFB_FREE_LIMIT) {
-            return Guest.lockedCard(v.base_verb, I18n.field(v, 'portuguese_translation'));
+          if (isGuest && vIdx++ >= AFB_FREE_LIMIT_STRICT) {
+            return Guest.lockedWord(v.verb_type || "verbo");
           }
           return `
           <a class="card card-sm center" href="verbo.html?id=${v.id}&nivel=${currentLevel}">
@@ -100,7 +99,7 @@
             <p class="muted" style="margin:4px 0; font-size:.85rem;">${I18n.field(v, 'portuguese_translation')}</p>
             ${progress.completed.includes("verb-" + v.id) ? '<span class="badge">✅</span>' : `<span class="xp-pill">+${v.xp_reward} XP</span>`}
           </a>`;
-        }).join("")}</div>${isGuest && verbsData.length > AFB_FREE_LIMIT ? Guest.banner(1315 - AFB_FREE_LIMIT, "verbos conjugados") : ""}`;
+        }).join("")}</div>${isGuest && verbsData.length > AFB_FREE_LIMIT_STRICT ? Guest.banner(1315 - AFB_FREE_LIMIT_STRICT, "verbos conjugados") : ""}`;
         return;
       }
 
@@ -129,30 +128,6 @@
             }).join("")}
           </div>
         `).join("") + (isGuest && dIdx > AFB_FREE_LIMIT ? Guest.banner(1225 - AFB_FREE_LIMIT, "diálogos") : "");
-      } else {
-        const podcasts = levelData.podcasts || [];
-        if (!podcasts.length) { el.innerHTML = emptyMsg(); return; }
-        const byCategory = {};
-        podcasts.forEach((p) => { (byCategory[p.category] = byCategory[p.category] || []).push(p); });
-        let pIdx = 0;
-        el.innerHTML = Object.entries(byCategory).map(([cat, list]) => `
-          <h4 style="margin:20px 0 8px;">${cat}</h4>
-          <div class="grid grid-3">
-            ${list.map((p) => {
-              if (isGuest && pIdx++ >= AFB_FREE_LIMIT) {
-                return Guest.lockedCard(I18n.field(p, 'title'), I18n.field(p, 'description') || "");
-              }
-              return `
-              <a class="card card-sm" href="podcast.html?id=${p.id}&nivel=${currentLevel}">
-                <div class="flex-between">
-                  <b>${I18n.field(p, 'title')}</b>
-                  ${progress.completed.includes("podcast-" + p.id) ? '<span class="badge">✅</span>' : `<span class="xp-pill">+${p.xp_reward} XP</span>`}
-                </div>
-                <p class="muted" style="font-size:.85rem; margin:6px 0 0;">${I18n.field(p, 'description') || ""}</p>
-              </a>`;
-            }).join("")}
-          </div>
-        `).join("") + (isGuest && pIdx > AFB_FREE_LIMIT ? Guest.banner(38 - AFB_FREE_LIMIT, "podcasts") : "");
       }
     }
 

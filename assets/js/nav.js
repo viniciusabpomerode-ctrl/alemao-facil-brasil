@@ -1,40 +1,48 @@
-// Navbar comum as paginas internas (app/*.html)
+// Navbar comum as paginas internas (app/*.html) — menu curto e direto:
+// Início / Conteúdo (dropdown com tudo) / Planos / Suporte
+const AFB_CONTENT_PAGES = [
+  { href: "cursos.html", label: "💬 Diálogos", key: "cursos" },
+  { href: "cursos.html?tab=verbos", label: "📖 Verbos", key: "verbos" },
+  { href: "musica.html", label: "🎵 Música", key: "musica" },
+  { href: "expressoes.html", label: "🗣️ Gírias", key: "expressoes" },
+  { href: "profissoes.html", label: "💼 Profissões", key: "profissoes" },
+  { href: "quiz.html", label: "⚡ Quiz", key: "quiz" },
+  { href: "simulado.html", label: "📝 Simulado Goethe", key: "simulado" },
+  { href: "escrita.html", label: "✍️ Escrita", key: "escrita" },
+  { href: "pronuncia.html", label: "🎤 Pronúncia", key: "pronuncia" },
+  { href: "jogo.html", label: "🎮 Jogo", key: "jogo" },
+  { href: "caderno.html", label: "📝 Caderno", key: "caderno" },
+];
+
 function renderNav(active) {
   const user = Auth.currentUser();
-  const links = [
-    { href: "dashboard.html", label: "Início", key: "dashboard" },
-    { href: "cursos.html", label: "Cursos", key: "cursos" },
-    { href: "musica.html", label: "Música", key: "musica" },
-    { href: "escrita.html", label: "✍️ Escrita", key: "escrita" },
-    { href: "pronuncia.html", label: "🎤 Pronúncia", key: "pronuncia" },
-    { href: "jogo.html", label: "Jogo", key: "jogo" },
-    { href: "expressoes.html", label: "🗣️ Gírias", key: "expressoes" },
-    { href: "profissoes.html", label: "💼 Profissões", key: "profissoes" },
-    { href: "simulado.html", label: "📝 Simulado", key: "simulado" },
-    { href: "quiz.html", label: "⚡ Quiz", key: "quiz" },
-    { href: "caderno.html", label: "📝 Caderno", key: "caderno" },
-    { href: "planos.html", label: "Planos", key: "planos" },
-    { href: "perfil.html", label: "Perfil", key: "perfil" },
-  ];
+  const isContentPage = AFB_CONTENT_PAGES.some((l) => l.key === active);
 
-  const linksHtml = links
-    .map(
-      (l) =>
-        `<a href="${l.href}" class="${l.key === active ? "active" : ""}">${l.label}</a>`
-    )
+  const dropdownItems = AFB_CONTENT_PAGES
+    .map((l) => `<a href="${l.href}" class="nav-dd-item ${l.key === active ? "active" : ""}">${l.label}</a>`)
     .join("");
+
+  const linksHtml = `
+    <a href="../index.html" class="${active === "dashboard" ? "active" : ""}">Início</a>
+    <div class="nav-dropdown">
+      <span class="nav-dd-trigger ${isContentPage ? "active" : ""}">Conteúdo ▾</span>
+      <div class="nav-dd-menu">${dropdownItems}</div>
+    </div>
+    <a href="planos.html" class="${active === "planos" ? "active" : ""}">Planos</a>
+    <a href="suporte.html" class="${active === "suporte" ? "active" : ""}">Suporte</a>
+  `;
 
   const el = document.getElementById("app-nav");
   if (!el) return;
   const navRight = user
-    ? `<span class="muted" style="font-size:.85rem;">Olá, ${user.name.split(" ")[0]}</span>
+    ? `<a class="btn btn-ghost btn-sm" href="perfil.html">Perfil</a>
        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Sair</button>`
     : `<a class="btn btn-ghost btn-sm" href="login.html">Entrar</a>
        <a class="btn btn-primary btn-sm" href="cadastro.html">Criar conta</a>`;
   el.outerHTML = `
     <header class="navbar">
-      <a class="brand" href="${user ? "dashboard.html" : "../index.html"}">
-        <span>${Theme.get() === "vikings" ? "🛡️" : "🦋"}</span> Alemão Fácil Brasil
+      <a class="brand" href="../index.html">
+        <span>${Theme.meta().icon}</span> Alemão Fácil Brasil
       </a>
       <nav>${linksHtml}</nav>
       <div class="nav-right">${navRight}</div>

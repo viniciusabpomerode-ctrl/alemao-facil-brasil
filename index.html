@@ -3,201 +3,316 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#09090b">
-  <meta name="description" content="Mais de 63.000 itens de estudo de alemão: diálogos, verbos conjugados, gírias, quiz, simulados Goethe, músicas e podcasts — do A1 ao C2. Experimente grátis.">
-  <title>Alemão Fácil Brasil — Seu espaço para estudar alemão</title>
+  <meta name="theme-color" content="#0b0b0d">
+  <meta name="description" content="Mais de 63.000 itens de estudo de alemão: diálogos, verbos conjugados, gírias, quiz, simulados Goethe, músicas e podcasts — do A1 ao C2. Experimente grátis, sem cadastro.">
+  <title>Alemão Fácil Brasil — Seu ambiente de estudo</title>
   <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .shell { display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
+    .sidebar { background:rgba(var(--overlay-tint),.5); border-right:1px solid var(--border-light); padding:20px 14px; position:sticky; top:0; height:100vh; overflow-y:auto; }
+    .sidebar .brand2 { display:flex; align-items:center; gap:8px; font-weight:500; font-size:14px; padding:0 8px 18px; }
+    .sidebar h4 { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-secondary); margin:18px 8px 6px; font-weight:500; }
+    .sidebar a { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-radius:8px; color:var(--text-secondary); font-size:13px; text-decoration:none; margin-bottom:2px; transition:background .2s,color .2s,transform .2s; }
+    .sidebar a:hover { background:rgba(255,255,255,.05); color:var(--text-primary); transform:translateX(2px); }
+    .sidebar a small { color:var(--text-secondary); font-size:11px; }
+    .main { padding:20px 28px 60px; max-width:1100px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
+    .search-box { flex:1; min-width:200px; max-width:420px; position:relative; }
+    .search-box input { width:100%; background:var(--card-bg); border:1px solid var(--border-light); color:var(--text-primary); padding:9px 14px; border-radius:10px; font-size:13px; transition:box-shadow .2s,transform .2s; }
+    .search-box input:focus { outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent); transform:scale(1.01); }
+    .env-switch { display:flex; gap:4px; background:rgba(255,255,255,.05); padding:4px; border-radius:999px; }
+    .env-switch button { border:none; background:transparent; color:var(--text-secondary); padding:6px 12px; border-radius:999px; font-size:12px; font-weight:500; cursor:pointer; transition:background .2s,color .2s; }
+    .env-switch button.active { background:var(--color-primary); color:var(--bg-primary); }
+    .hero-fx { position:relative; height:70px; margin:-20px -28px 4px; overflow:hidden; }
+    .quick-row { display:flex; gap:10px; margin:16px 0 20px; flex-wrap:wrap; }
+    .foco-row { display:grid; grid-template-columns:1.3fr 1fr; gap:12px; margin-bottom:22px; }
+    .pomo-ring { position:relative; width:64px; height:64px; margin:0 auto; border-radius:50%; }
+    .pomo-ring .hole { position:absolute; inset:5px; border-radius:50%; background:var(--bg-primary); display:flex; align-items:center; justify-content:center; }
+    .pomo-ring input { width:52px; background:transparent; border:none; color:var(--text-primary); font-size:13px; font-weight:500; text-align:center; font-family:inherit; }
+    .stat-tile { padding:13px 10px; text-align:center; }
+    .stat-tile .ico { font-size:15px; margin-bottom:4px; }
+    .stat-tile b { display:block; font-size:15px; font-weight:500; }
+    .stat-tile span { display:block; font-size:10px; color:var(--text-secondary); margin-top:1px; }
+    @media (max-width:860px) { .shell { grid-template-columns:1fr; } .sidebar { position:static; height:auto; display:flex; flex-wrap:wrap; gap:4px; } .sidebar h4 { display:none; } .foco-row { grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
-  <header class="navbar">
-    <a class="brand" href="index.html"><span id="brand-icon" aria-hidden="true">A</span> Alemão Fácil Brasil</a>
-    <nav aria-label="Navegação principal">
-      <a href="#conteudo">Conteúdo</a>
-      <a href="app/cursos.html">Explorar</a>
-      <a href="#foco">Foco</a>
-      <a href="#planos">Planos</a>
-      <a href="app/login.html">Entrar</a>
-    </nav>
-    <div class="nav-right">
-      <a class="btn btn-primary btn-sm" href="app/cadastro.html">Criar conta</a>
-    </div>
-  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand2"><span id="brand-icon">◆</span> Alemão Fácil</div>
 
-  <main>
-    <section class="workspace-hero" aria-labelledby="hero-title">
-      <div class="hero-inner">
-        <span class="eyebrow">Seu espaço de estudo · do A1 ao C2</span>
-        <h1 id="hero-title">Boa noite. Seu lugar favorito para estudar alemão.</h1>
-        <p>Mais de <strong style="color:var(--color-primary-dark)">63.000 itens de estudo</strong> — diálogos, verbos conjugados, gírias, quiz, simulados Goethe, músicas e podcasts — em uma atmosfera tranquila para aprender no seu ritmo.</p>
-        <div class="actions" style="justify-content:flex-start;margin-top:26px">
-          <a class="btn btn-primary" href="app/cursos.html">Explorar agora — sem cadastro</a>
-          <a class="btn btn-outline" href="app/cadastro.html">Criar conta grátis</a>
+      <h4>Estudar</h4>
+      <a href="app/cursos.html">💬 Diálogos <small>1.225</small></a>
+      <a href="app/cursos.html?tab=verbos">📖 Verbos <small>38.802</small></a>
+      <a href="app/musica.html">🎵 Música <small>89</small></a>
+      <a href="app/expressoes.html">🗣️ Gírias <small>1.509</small></a>
+      <a href="app/profissoes.html">💼 Profissões <small>1.200</small></a>
+
+      <h4>Treinar</h4>
+      <a href="app/quiz.html">⚡ Quiz <small>3.000</small></a>
+      <a href="app/jogo.html">🎮 Caçando Vocabulário</a>
+      <a href="app/escrita.html">✍️ Escrita <small>609</small></a>
+      <a href="app/pronuncia.html">🎤 Pronúncia</a>
+      <a href="app/simulado.html">📝 Simulado Goethe <small>598</small></a>
+
+      <h4>Acompanhar</h4>
+      <a href="app/perfil.html">📊 Progresso</a>
+      <a href="app/caderno.html">📓 Caderno</a>
+
+      <h4>Outros</h4>
+      <a href="app/planos.html">💎 Planos</a>
+      <a href="app/suporte.html">🛟 Suporte</a>
+    </aside>
+
+    <main class="main">
+      <div class="topbar mi-stagger">
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Pesquisar qualquer palavra, verbo, diálogo, profissão, música...">
         </div>
-        <div class="session-strip" aria-label="Sessão de foco atual">
-          <button class="session-play" id="ambient-play" type="button" aria-label="Iniciar som ambiente">▶</button>
-          <div class="session-meta">
-            <strong>Cafeteria em Berlim</strong>
-            <span id="ambient-status">Som ambiente pausado · sessão noturna</span>
+        <div class="env-switch" id="env-switch">
+          <button data-env="moderno">◆ Moderno</button>
+          <button data-env="vikings">🛡️ Vikings</button>
+          <button data-env="aurora">🌌 Aurora</button>
+        </div>
+        <div id="user-actions"></div>
+      </div>
+
+      <div class="hero-fx" id="hero-fx"></div>
+
+      <div class="mi-stagger">
+        <h1 style="font-size:22px; font-weight:500; margin:0 0 4px;" id="greeting">Bom dia! 👋</h1>
+        <p class="muted" style="margin:0 0 16px; font-size:13px;">Aprenda do seu jeito. Escolha qualquer conteúdo e comece.</p>
+      </div>
+
+      <div class="quick-row mi-stagger">
+        <button class="btn btn-primary mi-breathe" id="start-session-btn" style="padding:12px 22px;">▶ Iniciar sessão de estudo</button>
+        <a class="btn btn-outline" href="app/quiz.html" style="padding:12px 18px;">⚡ Sessão rápida</a>
+      </div>
+
+      <div class="foco-row">
+        <div class="card mi-card mi-stagger" style="padding:16px 18px;">
+          <div class="flex-between">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span id="play-btn" class="mi-ripple" style="width:36px; height:36px; border-radius:50%; background:var(--color-primary); color:var(--bg-primary); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px;">▶</span>
+              <div>
+                <b style="font-size:13px;" id="track-title">Späte Stunden</b>
+                <div class="muted" style="font-size:11px;" id="track-status">LoFi Cafe · pausado</div>
+              </div>
+            </div>
+            <span id="expand-toggle" style="cursor:pointer; color:var(--text-secondary); font-size:13px;">▾</span>
           </div>
-          <div class="session-tools">
-            <button type="button" data-minutes="25">25 min</button>
-            <button type="button" data-minutes="50">50 min</button>
-            <button type="button" onclick="location.href='app/login.html'">Abrir workspace</button>
+          <div id="wave" style="display:flex; align-items:end; gap:3px; height:20px; margin-top:12px; opacity:.5;">
+            <i class="mi-wavebar" style="width:4px; height:35%; background:var(--color-primary); display:block; border-radius:2px;"></i>
+            <i class="mi-wavebar" style="width:4px; height:65%; background:var(--color-primary); display:block; border-radius:2px; animation-delay:.1s;"></i>
+            <i class="mi-wavebar" style="width:4px; height:25%; background:var(--color-primary); display:block; border-radius:2px; animation-delay:.2s;"></i>
+            <i class="mi-wavebar" style="width:4px; height:80%; background:var(--color-primary); display:block; border-radius:2px; animation-delay:.3s;"></i>
+            <i class="mi-wavebar" style="width:4px; height:50%; background:var(--color-primary); display:block; border-radius:2px; animation-delay:.15s;"></i>
+            <i class="mi-wavebar" style="width:4px; height:70%; background:var(--color-primary); display:block; border-radius:2px; animation-delay:.05s;"></i>
+          </div>
+          <div id="expand-panel" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border-light);">
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span class="badge" data-station="chilling">🧊 Chill</span>
+              <span class="badge" data-station="studying">📚 Study</span>
+              <span class="badge" data-station="working" style="background:var(--color-primary); color:var(--bg-primary);">💼 Working</span>
+              <span class="badge" data-station="sleeping">😴 Sleep</span>
+            </div>
+            <iframe id="lofi-frame" src="" width="100%" height="80" frameborder="0" allow="autoplay" loading="lazy" style="border-radius:10px; margin-top:10px; display:none;"></iframe>
+          </div>
+        </div>
+
+        <div class="card mi-card mi-stagger" style="padding:16px 18px; text-align:center;">
+          <div class="muted" style="font-size:11px; margin-bottom:8px;">🍅 Pomodoro</div>
+          <div class="pomo-ring" id="pomo-ring">
+            <div class="hole"><input id="pomo-input" value="25:00"></div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:6px; margin-top:10px;">
+            <button class="btn btn-ghost btn-sm" id="pomo-minus" style="padding:4px 9px;">−</button>
+            <button class="btn btn-primary btn-sm" id="pomo-start" style="padding:4px 12px;">Iniciar</button>
+            <button class="btn btn-ghost btn-sm" id="pomo-plus" style="padding:4px 9px;">+</button>
+          </div>
+          <div style="display:flex; justify-content:center; gap:5px; margin-top:10px;">
+            <span class="badge pomo-preset" data-min="5">5m</span>
+            <span class="badge pomo-preset" data-min="15">15m</span>
+            <span class="badge pomo-preset active" data-min="25" style="background:var(--color-primary); color:var(--bg-primary);">25m</span>
           </div>
         </div>
       </div>
-    </section>
 
-    <section class="workspace-section container" id="conteudo" aria-labelledby="conteudo-title">
-      <div class="section-head">
-        <div><span class="eyebrow">O que tem dentro</span><h2 id="conteudo-title">Uma biblioteca inteira de alemão</h2></div>
-        <p>Tudo organizado por nível, do A1 ao C2 — com áudio, tradução e pronúncia. E crescendo toda semana.</p>
+      <h3 class="section-title mi-stagger" style="margin-top:0;">O que você quer estudar hoje?</h3>
+      <div class="grid grid-4" style="gap:9px;">
+        <a href="app/cursos.html?tab=verbos" class="card mi-card mi-stagger stat-tile"><div class="ico">📖</div><b class="mi-num" data-target="38802">0</b><span>frases de verbo</span></a>
+        <a href="app/cursos.html" class="card mi-card mi-stagger stat-tile"><div class="ico">💬</div><b class="mi-num" data-target="1225">0</b><span>diálogos</span></a>
+        <a href="app/musica.html" class="card mi-card mi-stagger stat-tile"><div class="ico">🎵</div><b class="mi-num" data-target="89">0</b><span>músicas</span></a>
+        <a href="app/expressoes.html" class="card mi-card mi-stagger stat-tile"><div class="ico">🗣️</div><b class="mi-num" data-target="1509">0</b><span>gírias</span></a>
+        <a href="app/profissoes.html" class="card mi-card mi-stagger stat-tile"><div class="ico">💼</div><b class="mi-num" data-target="1200">0</b><span>frases profissões</span></a>
+        <a href="app/quiz.html" class="card mi-card mi-stagger stat-tile"><div class="ico">⚡</div><b class="mi-num" data-target="3000">0</b><span>questões de quiz</span></a>
+        <a href="app/simulado.html" class="card mi-card mi-stagger stat-tile"><div class="ico">📝</div><b class="mi-num" data-target="598">0</b><span>simulado Goethe</span></a>
+        <a href="app/escrita.html" class="card mi-card mi-stagger stat-tile"><div class="ico">✍️</div><b class="mi-num" data-target="609">0</b><span>frases de escrita</span></a>
       </div>
-      <div class="stat-grid">
-        <div class="stat-card stat-total"><strong>+63.000</strong><span>itens de estudo no total</span><small>conteúdo real, com áudio e tradução — não é demo</small></div>
-        <div class="stat-card"><strong>1.225</strong><span>Diálogos</span><small>122 temas · 8.201 frases · 3.677 dicas de gramática</small></div>
-        <div class="stat-card"><strong>1.315</strong><span>Verbos</span><small>38.802 exemplos conjugados em 3 tempos</small></div>
-        <div class="stat-card"><strong>3.000</strong><span>Questões de quiz</span><small>500 questões por nível, A1 ao C2</small></div>
-        <div class="stat-card"><strong>1.509</strong><span>Gírias e expressões</span><small>20 categorias, com áudio e exemplos</small></div>
-        <div class="stat-card"><strong>1.200</strong><span>Frases de profissões</span><small>24 profissões · todas com áudio MP3</small></div>
-        <div class="stat-card"><strong>598</strong><span>Simulado Goethe</span><small>Lesen · Hören · Schreiben · Sprechen</small></div>
-        <div class="stat-card"><strong>609</strong><span>Frases de escrita</span><small>prática guiada do A1 ao C2</small></div>
-        <div class="stat-card"><strong>89</strong><span>Músicas</span><small>letra traduzida linha a linha</small></div>
-        <div class="stat-card"><strong>38</strong><span>Podcasts</span><small>histórias com 228 frases destrinchadas</small></div>
-        <div class="stat-card"><strong>7.482</strong><span>Palavras de vocabulário</span><small>extraídas dos diálogos, em contexto</small></div>
-      </div>
-    </section>
 
-    <section class="workspace-section container" id="amostra" aria-labelledby="amostra-title">
-      <div class="section-head">
-        <div><span class="eyebrow">Entre e explore agora</span><h2 id="amostra-title">Sem cadastro, sem cartão</h2></div>
-        <p>Navegue pelo conteúdo de verdade: 20 de cada categoria já estão liberados pra você — o resto fica visível, esperando você destravar.</p>
+      <div class="card mi-stagger" style="margin-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;" id="progress-card">
+        <div style="display:flex; gap:26px;">
+          <div><b style="font-size:15px;" id="stat-xp">0</b><div class="muted" style="font-size:10px;">XP total</div></div>
+          <div><b style="font-size:15px;" id="stat-streak">0</b><div class="muted" style="font-size:10px;">dias seguidos</div></div>
+          <div><b style="font-size:15px;" id="stat-completed">0</b><div class="muted" style="font-size:10px;">concluídos</div></div>
+        </div>
+        <div id="progress-cta"></div>
       </div>
-      <div class="grid grid-3">
-        <a class="card card-sm" href="app/cursos.html"><strong>💬 Diálogos</strong><p class="muted" style="font-size:.82rem;margin:6px 0 0">1.225 conversas reais com tradução, pronúncia e áudio.</p></a>
-        <a class="card card-sm" href="app/cursos.html?tab=verbos"><strong>📖 Verbos</strong><p class="muted" style="font-size:.82rem;margin:6px 0 0">1.315 verbos com 38.802 conjugações em 3 tempos.</p></a>
-        <a class="card card-sm" href="app/expressoes.html"><strong>🗣️ Gírias</strong><p class="muted" style="font-size:.82rem;margin:6px 0 0">1.509 expressões de como os alemães falam de verdade.</p></a>
-        <a class="card card-sm" href="app/quiz.html"><strong>🧠 Quiz</strong><p class="muted" style="font-size:.82rem;margin:6px 0 0">3.000 questões pra testar seu nível na hora.</p></a>
-        <a class="card card-sm" href="app/escrita.html"><strong>✍️ Escrita</strong><p class="muted" style="font-size:.82rem;margin:6px 0 0">609 frases guiadas pra praticar escrevendo.</p></a>
-        <a class="card card-sm" href="app/profissoes.html"><strong>💼 Profissões</strong><p class="muted" style="font-size:.82rem;margin:6px 0 0">1.200 frases do mundo do trabalho, com áudio nativo.</p></a>
-      </div>
-      <div class="actions" style="display:flex;justify-content:center;margin-top:26px">
-        <a class="btn btn-primary" href="app/cursos.html">Começar a explorar</a>
-      </div>
-    </section>
 
-    <section class="workspace-section container" id="foco" aria-labelledby="foco-title">
-      <div class="section-head">
-        <div><span class="eyebrow">Sessão de agora</span><h2 id="foco-title">Som, tempo e intenção</h2></div>
-        <p>Rádio lo-fi integrada e Pomodoro — o mesmo ambiente que você encontra dentro do workspace.</p>
+      <div class="mi-stagger" id="planos-teaser" style="margin-top:14px; padding:14px 18px; border:1px dashed var(--border-light); border-radius:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div><b style="font-size:13px;">A partir de R$ 14,99/mês</b><p class="muted" style="font-size:11px; margin:2px 0 0;">Libera os 63.000 itens quando quiser.</p></div>
+        <a class="btn btn-outline btn-sm" href="app/planos.html">Ver planos</a>
       </div>
-      <div class="focus-grid">
-        <article class="card focus-panel">
-          <div><span class="badge">🎧 LoFi Cafe · ao vivo</span><h3 style="font-size:1.7rem;margin:14px 0 4px">Späte Stunden</h3><p class="muted">Rádio lo-fi para concentração — aperte o play e estude.</p></div>
-          <div class="lofi-inline">
-            <iframe src="https://loficafe.net/embed/working?utm_source=alemaofacilbrasil&utm_medium=embed"
-              height="120" allow="autoplay" loading="lazy" title="Rádio lo-fi para estudar"></iframe>
-          </div>
-          <a class="btn btn-outline" href="app/musica.html" style="margin-top:14px">Explorar as 89 músicas em alemão</a>
-        </article>
-        <article class="card center">
-          <span class="eyebrow">Pomodoro</span>
-          <div class="pomo-ring"><span id="home-pomo-time">25:00</span></div>
-          <button class="btn btn-primary" id="home-pomo-start" type="button">Iniciar foco</button>
-        </article>
-      </div>
-    </section>
 
-    <section class="workspace-section container" aria-labelledby="ambientes-title" id="ambientes">
-      <div class="section-head">
-        <div><span class="eyebrow">Escolha a atmosfera</span><h2 id="ambientes-title">Ambientes para cada ritmo</h2></div>
-        <p>Entre em um cenário, reduza o ruído ao redor e mantenha a atenção no alemão.</p>
-      </div>
-      <div class="environment-grid">
-        <article class="environment-card wide env-library" tabindex="0"><div class="environment-copy"><strong>Biblioteca silenciosa</strong><span>Leitura profunda · ruído baixo</span></div></article>
-        <article class="environment-card wide env-rain" tabindex="0"><div class="environment-copy"><strong>Chuva na janela</strong><span>Foco suave · noite longa</span></div></article>
-        <article class="environment-card env-cafe" tabindex="0"><div class="environment-copy"><strong>Café em Berlim</strong><span>Conversação · ambiente quente</span></div></article>
-        <article class="environment-card env-ice" tabindex="0"><div class="environment-copy"><strong>ICE noturno</strong><span>Vocabulário em movimento</span></div></article>
-        <article class="environment-card env-forest" tabindex="0"><div class="environment-copy"><strong>Floresta Negra</strong><span>Imersão · sons da natureza</span></div></article>
-      </div>
-    </section>
+    </main>
+  </div>
 
-    <section class="workspace-section container" id="planos" aria-labelledby="planos-title">
-      <div class="section-head">
-        <div><span class="eyebrow">Investimento</span><h2 id="planos-title">Menos que um lanche por mês</h2></div>
-        <p>Comece de graça com a amostra. Quando quiser tudo, o Premium libera a biblioteca inteira.</p>
-      </div>
-      <div class="price-grid">
-        <article class="card price-card">
-          <span class="eyebrow">Grátis</span>
-          <div class="price-tag">R$ 0</div>
-          <p class="price-note">para sempre</p>
-          <ul>
-            <li>20 conteúdos de cada categoria</li>
-            <li>Quiz de nivelamento</li>
-            <li>Rádio lo-fi e Pomodoro</li>
-            <li class="off">Biblioteca completa (63.000 itens)</li>
-          </ul>
-          <a class="btn btn-outline btn-block" href="app/cursos.html">Começar grátis</a>
-        </article>
-        <article class="card price-card featured">
-          <span class="price-flag">Mais popular · economize 38%</span>
-          <span class="eyebrow">Premium Anual</span>
-          <div class="price-tag">R$ 149<small>/ano</small></div>
-          <p class="price-note">equivale a R$ 12,42 por mês</p>
-          <ul>
-            <li>Todos os 63.000 itens liberados</li>
-            <li>Áudio nativo em tudo</li>
-            <li>Simulados Goethe completos</li>
-            <li>Progresso sincronizado na nuvem</li>
-          </ul>
-          <a class="btn btn-primary btn-block" href="app/planos.html">Assinar anual</a>
-        </article>
-        <article class="card price-card">
-          <span class="eyebrow">Premium Mensal</span>
-          <div class="price-tag">R$ 19,90<small>/mês</small></div>
-          <p class="price-note">cancele quando quiser</p>
-          <ul>
-            <li>Todos os 63.000 itens liberados</li>
-            <li>Áudio nativo em tudo</li>
-            <li>Simulados Goethe completos</li>
-            <li>Progresso sincronizado na nuvem</li>
-          </ul>
-          <a class="btn btn-outline btn-block" href="app/planos.html">Assinar mensal</a>
-        </article>
-      </div>
-    </section>
-
-    <section class="workspace-section container" aria-labelledby="missions-title">
-      <div class="section-head"><div><span class="eyebrow">Um passo de cada vez</span><h2 id="missions-title">Missões para hoje</h2></div></div>
-      <div class="mission-list">
-        <a class="mission" href="app/quiz.html"><span class="mission-dot">1</span><div><strong>Responder um quiz rápido</strong><span>5 perguntas · aproximadamente 3 minutos</span></div></a>
-        <a class="mission" href="app/cursos.html"><span class="mission-dot">2</span><div><strong>Ouvir um diálogo curto</strong><span>Compreensão auditiva · nível A1</span></div></a>
-        <a class="mission" href="app/escrita.html"><span class="mission-dot">3</span><div><strong>Escrever três frases</strong><span>Prática livre com orientação</span></div></a>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer"><p>Alemão Fácil Brasil © 2026 — um espaço tranquilo para aprender de verdade.</p></footer>
   <script src="assets/js/theme.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/xp.js"></script>
+  <script src="assets/js/guest.js"></script>
+  <script src="assets/js/microinteracoes.js"></script>
   <script>
-    document.getElementById("brand-icon").textContent = Theme.get() === "vikings" ? "A" : "G";
-    const play = document.getElementById("ambient-play");
-    const status = document.getElementById("ambient-status");
-    let ambientOn = false;
-    play.addEventListener("click", () => {
-      ambientOn = !ambientOn;
-      play.textContent = ambientOn ? "Ⅱ" : "▶";
-      play.setAttribute("aria-label", ambientOn ? "Pausar som ambiente" : "Iniciar som ambiente");
-      status.textContent = ambientOn ? "Som ambiente ativo · sessão noturna" : "Som ambiente pausado · sessão noturna";
+    // ── Ambiente (tema) ──
+    function paintEnv() {
+      const meta = Theme.meta();
+      document.getElementById("brand-icon").textContent = meta.icon;
+      document.querySelectorAll("#env-switch button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.env === Theme.get());
+      });
+      const fx = document.getElementById("hero-fx");
+      if (Theme.get() === "vikings") {
+        fx.style.background = "radial-gradient(ellipse at 50% -20%, rgba(184,135,74,.14), transparent 65%)";
+      } else if (Theme.get() === "aurora") {
+        fx.style.background = "linear-gradient(180deg, rgba(180,210,255,.35), rgba(220,190,240,.15) 55%, transparent 85%)";
+      } else {
+        fx.style.background = "radial-gradient(ellipse at 80% -20%, rgba(111,155,209,.12), transparent 60%)";
+      }
+    }
+    document.querySelectorAll("#env-switch button").forEach((b) => {
+      b.addEventListener("click", () => { Theme.set(b.dataset.env); paintEnv(); });
     });
-    let seconds = 25 * 60;
-    let timer = null;
-    const time = document.getElementById("home-pomo-time");
-    const start = document.getElementById("home-pomo-start");
-    function drawTime() { time.textContent = String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0"); }
-    document.querySelectorAll("[data-minutes]").forEach(button => button.addEventListener("click", () => { clearInterval(timer); timer = null; seconds = Number(button.dataset.minutes) * 60; start.textContent = "Iniciar foco"; drawTime(); document.getElementById("foco").scrollIntoView({ behavior: "smooth" }); }));
-    start.addEventListener("click", () => { if (timer) { clearInterval(timer); timer = null; start.textContent = "Continuar foco"; return; } start.textContent = "Pausar"; timer = setInterval(() => { if (seconds > 0) { seconds--; drawTime(); } else { clearInterval(timer); timer = null; start.textContent = "Recomeçar"; } }, 1000); });
+    paintEnv();
+
+    // ── Usuário / visitante ──
+    (async () => {
+      const isGuest = await Guest.check();
+      const user = !isGuest ? Auth.currentUser() : null;
+      const actions = document.getElementById("user-actions");
+      actions.innerHTML = user
+        ? `<a class="btn btn-ghost btn-sm" href="app/perfil.html">Perfil</a> <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Sair</button>`
+        : `<a class="btn btn-ghost btn-sm" href="app/login.html">Entrar</a> <a class="btn btn-primary btn-sm" href="app/cadastro.html">Criar conta</a>`;
+
+      document.getElementById("greeting").textContent = user
+        ? `Bom dia, ${user.name.split(" ")[0]}! 👋`
+        : "Bom dia! 👋 Bem-vindo ao Alemão Fácil Brasil";
+
+      const progress = Guest.safeProgress();
+      document.getElementById("stat-streak").textContent = progress.streak || 0;
+      document.getElementById("stat-completed").textContent = (progress.completed || []).length;
+      miAnimateNumber(document.getElementById("stat-xp"), progress.xp || 0, 900);
+
+      document.getElementById("progress-cta").innerHTML = user
+        ? `<a class="btn btn-outline btn-sm" href="app/perfil.html">Ver progresso completo</a>`
+        : `<a class="btn btn-outline btn-sm" href="app/cadastro.html">Criar conta pra não perder seu progresso</a>`;
+
+      if (!user) {
+        document.getElementById("planos-teaser").style.display = "flex";
+      }
+
+      document.getElementById("start-session-btn").addEventListener("click", (e) => {
+        miRipple(e.currentTarget);
+        setTimeout(() => { window.location.href = "app/cursos.html"; }, 160);
+      });
+    })();
+
+    // ── Microinteracoes: stagger + contadores ──
+    miStagger(".mi-stagger", document, 60);
+    document.querySelectorAll(".mi-num").forEach((el) => {
+      miAnimateNumber(el, Number(el.dataset.target), 1300);
+    });
+
+    // ── Player lo-fi ──
+    let playing = false;
+    const lofiFrame = document.getElementById("lofi-frame");
+    let currentStation = "working";
+    function loadStation(st) {
+      currentStation = st;
+      lofiFrame.src = `https://loficafe.net/embed/${st}?utm_source=alemaofacilbrasil&utm_medium=embed`;
+    }
+    document.getElementById("play-btn").addEventListener("click", (e) => {
+      miRipple(e.currentTarget);
+      playing = !playing;
+      e.currentTarget.textContent = playing ? "❚❚" : "▶";
+      document.getElementById("track-status").textContent = playing ? "LoFi Cafe · tocando agora" : "LoFi Cafe · pausado";
+      document.getElementById("wave").style.opacity = playing ? "1" : ".5";
+      if (playing && !lofiFrame.src) loadStation(currentStation);
+      lofiFrame.style.display = playing ? "block" : "none";
+    });
+    document.getElementById("expand-toggle").addEventListener("click", (e) => {
+      const panel = document.getElementById("expand-panel");
+      const open = panel.style.display === "block";
+      panel.style.display = open ? "none" : "block";
+      e.target.textContent = open ? "▾" : "▴";
+    });
+    document.querySelectorAll("[data-station]").forEach((b) => {
+      b.addEventListener("click", () => {
+        document.querySelectorAll("[data-station]").forEach((x) => { x.style.background = ""; x.style.color = ""; });
+        b.style.background = "var(--color-primary)"; b.style.color = "var(--bg-primary)";
+        loadStation(b.dataset.station);
+        if (playing) lofiFrame.style.display = "block";
+      });
+    });
+
+    // ── Pomodoro editável (presets 5/15/25 + setas + edição direta) ──
+    let pomoMin = 25, pomoRunning = false, pomoTimer = null, pomoSecsLeft = 25 * 60;
+    const pomoInput = document.getElementById("pomo-input");
+    const pomoRing = document.getElementById("pomo-ring");
+    function drawPomoIdle() {
+      pomoInput.value = String(pomoMin).padStart(2, "0") + ":00";
+      pomoRing.style.background = `conic-gradient(var(--color-primary) 0 0%, rgba(255,255,255,.1) 0%)`;
+      pomoRing.classList.remove("mi-pulse");
+    }
+    function setPomo(min) {
+      pomoMin = min; pomoSecsLeft = min * 60;
+      drawPomoIdle();
+      document.querySelectorAll(".pomo-preset").forEach((p) => {
+        const active = Number(p.dataset.min) === min;
+        p.style.background = active ? "var(--color-primary)" : "";
+        p.style.color = active ? "var(--bg-primary)" : "";
+      });
+    }
+    document.querySelectorAll(".pomo-preset").forEach((p) => p.addEventListener("click", () => setPomo(Number(p.dataset.min))));
+    document.getElementById("pomo-minus").addEventListener("click", () => setPomo(Math.max(1, pomoMin - 1)));
+    document.getElementById("pomo-plus").addEventListener("click", () => setPomo(Math.min(99, pomoMin + 1)));
+    pomoInput.addEventListener("change", () => {
+      const v = parseInt(pomoInput.value) || 25;
+      setPomo(Math.max(1, Math.min(99, v)));
+    });
+    document.getElementById("pomo-start").addEventListener("click", (e) => {
+      miRipple(e.currentTarget);
+      if (pomoRunning) {
+        pomoRunning = false; clearInterval(pomoTimer);
+        e.currentTarget.textContent = "Continuar";
+        return;
+      }
+      pomoRunning = true;
+      e.currentTarget.textContent = "Pausar";
+      const total = pomoMin * 60;
+      pomoTimer = setInterval(() => {
+        pomoSecsLeft--;
+        const pct = ((total - pomoSecsLeft) / total) * 100;
+        pomoRing.style.background = `conic-gradient(var(--color-primary) 0 ${pct}%, rgba(255,255,255,.1) ${pct}%)`;
+        const m = Math.floor(pomoSecsLeft / 60), s = pomoSecsLeft % 60;
+        pomoInput.value = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+        if (pomoSecsLeft <= 60) pomoRing.classList.add("mi-pulse");
+        if (pomoSecsLeft <= 0) {
+          clearInterval(pomoTimer); pomoRunning = false;
+          document.getElementById("pomo-start").textContent = "Iniciar";
+          pomoInput.value = "Foco! 🎉";
+        }
+      }, 1000);
+    });
   </script>
 </body>
 </html>

@@ -256,7 +256,7 @@
         return `<h4 style="margin:16px 0 8px;color:${levelColor(lv)}">${lv}</h4>` +
           frases.map((f, fi) => {
             if (isGuest && phraseIdx++ >= AFB_FREE_LIMIT) {
-              return Guest.lockedRow(f.de, f.pt);
+              return Guest.lockedRowHidden(lv);
             }
             return `
             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;margin:4px 0;background:var(--bg-secondary);border-radius:8px;gap:8px;">

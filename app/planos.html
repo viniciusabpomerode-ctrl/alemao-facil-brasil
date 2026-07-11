@@ -33,7 +33,7 @@
       </article>
 
       <article class="card price-card featured">
-        <span class="price-flag">Mais popular · economize 38%</span>
+        <span class="price-flag">Mais popular · economize 17%</span>
         <span class="eyebrow">Premium Anual</span>
         <div class="price-tag">R$ 149<small>/ano</small></div>
         <p class="price-note">equivale a R$ 12,42/mês · pagamento único anual</p>
@@ -50,7 +50,7 @@
 
       <article class="card price-card">
         <span class="eyebrow">Premium Mensal</span>
-        <div class="price-tag">R$ 19,90<small>/mês</small></div>
+        <div class="price-tag">R$ 14,99<small>/mês</small></div>
         <p class="price-note">cancele quando quiser</p>
         <ul>
           <li>Todos os 63.000 itens liberados</li>
@@ -60,7 +60,7 @@
           <li>Áudio nativo em todo o conteúdo</li>
           <li>Progresso sincronizado na nuvem</li>
         </ul>
-        <button class="btn btn-outline btn-block subscribe-btn" data-plan="mensal" data-price-brl="19.90">Assinar mensal — R$ 19,90</button>
+        <button class="btn btn-outline btn-block subscribe-btn" data-plan="mensal" data-price-brl="14.99">Assinar mensal — R$ 14,99</button>
       </article>
     </div>
 
@@ -68,10 +68,10 @@
       <div class="flex-between" style="flex-wrap:wrap; gap:14px;">
         <div>
           <span class="badge" style="background:rgba(214,168,95,.18); color:var(--color-primary-dark);">🏅 Oferta de fundador · vagas limitadas</span>
-          <h3 style="margin:10px 0 4px; font-weight:500;">Acesso vitalício por R$ 79</h3>
+          <h3 style="margin:10px 0 4px; font-weight:500;">Acesso vitalício por R$ 297</h3>
           <p class="muted" style="margin:0; font-size:.86rem;">Só para os primeiros 100 assinantes: pague uma vez, use para sempre — incluindo tudo que ainda vamos lançar.</p>
         </div>
-        <button class="btn btn-primary subscribe-btn" data-plan="fundador" data-price-brl="79.00" style="flex-shrink:0;">Garantir vaga — R$ 79</button>
+        <button class="btn btn-primary subscribe-btn" data-plan="fundador" data-price-brl="297.00" style="flex-shrink:0;">Garantir vaga — R$ 297</button>
       </div>
     </div>
 
@@ -89,7 +89,7 @@
       ? '<div id="app-nav"></div>'
       : `<header class="navbar">
           <a class="brand" href="../index.html"><span aria-hidden="true">A</span> Alemão Fácil Brasil</a>
-          <nav><a href="../index.html#conteudo">Conteúdo</a><a href="amostra.html">Amostra grátis</a><a href="login.html">Entrar</a></nav>
+          <nav><a href="cursos.html">Conteúdo</a><a href="planos.html" class="active">Planos</a><a href="suporte.html">Suporte</a><a href="login.html">Entrar</a></nav>
           <div class="nav-right"><a class="btn btn-primary btn-sm" href="cadastro.html">Criar conta grátis</a></div>
         </header>`;
   </script>
@@ -98,38 +98,32 @@
   <script>
     if (user) renderNav("planos");
 
-    // ============================================================
-    // CHECKOUT STRIPE — PONTO DE INTEGRAÇÃO (para o cowork plugar)
-    //
-    // Planos definidos (criar os Prices correspondentes no Stripe):
-    //   mensal   → R$ 19,90/mês  (recorrente mensal)
-    //   anual    → R$ 149,00/ano (recorrente anual)
-    //   fundador → R$ 79,00      (pagamento único, lifetime, limite 100)
-    //
-    // Passos da integração:
-    //   1. Criar os 3 Prices no painel do Stripe e colar os IDs em STRIPE_PRICES.
-    //   2. Criar endpoint de checkout (Cloudflare Worker ou Supabase Edge
-    //      Function) que recebe { plan, userId } e devolve a URL da sessão
-    //      do Stripe Checkout.
-    //   3. Substituir o handler abaixo por: redirect para a URL da sessão.
-    //   4. Webhook do Stripe marca o usuário como premium (tabela
-    //      user_subscriptions no Supabase: user_id, plan, status, expires_at).
-    // ============================================================
-    const STRIPE_PRICES = {
-      mensal:   "price_TODO_MENSAL",
-      anual:    "price_TODO_ANUAL",
-      fundador: "price_TODO_FUNDADOR",
-    };
-
+    // Checkout real via Stripe — chama a Netlify Function, que cria a
+    // sessao e devolve a URL de pagamento pra onde a gente redireciona.
     document.querySelectorAll(".subscribe-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         if (!user) {
           // Sem conta ainda → cria conta primeiro, volta pra ca depois
           window.location.href = "cadastro.html?plano=" + btn.dataset.plan;
           return;
         }
-        // TODO(cowork): trocar este aviso pelo redirect ao Stripe Checkout
-        alert("O pagamento via Stripe está sendo ativado — você será avisado por e-mail assim que estiver no ar. Obrigado pelo interesse! 💛");
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Abrindo pagamento...";
+        try {
+          const res = await fetch("/.netlify/functions/create-checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ plan: btn.dataset.plan, email: user.email }),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.url) throw new Error(data.error || "erro ao iniciar pagamento");
+          window.location.href = data.url;
+        } catch (e) {
+          alert("Não deu pra abrir o pagamento agora: " + e.message);
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
       });
     });
   </script>

@@ -2,89 +2,11 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Início — Alemão Fácil Brasil</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
+  <meta http-equiv="refresh" content="0; url=../index.html">
+  <title>Redirecionando...</title>
 </head>
 <body>
-  <div id="app-nav"></div>
-
-  <div class="container" style="padding-top:28px;">
-    <div class="card" id="xp-card">
-      <div class="flex-between" style="flex-wrap:wrap; gap:16px;">
-        <div>
-          <span class="level-badge" id="level-badge"></span>
-          <h2 style="margin:10px 0 4px;" id="level-name"></h2>
-          <p class="muted" id="creature-desc" style="margin:0;"></p>
-        </div>
-        <div class="center">
-          <div style="font-size:2rem;">🔥</div>
-          <div><b id="streak">0</b> dias seguidos</div>
-        </div>
-      </div>
-      <div style="margin-top:18px;">
-        <div class="flex-between" style="font-size:.85rem;" class="muted">
-          <span id="xp-current">0 XP</span>
-          <span id="xp-next"></span>
-        </div>
-        <div class="xp-bar-track" style="margin-top:6px;">
-          <div class="xp-bar-fill" id="xp-fill" style="width:0%"></div>
-        </div>
-      </div>
-    </div>
-
-    <h3 class="section-title">Continue aprendendo</h3>
-    <div class="grid grid-4">
-      <a class="card center" href="cursos.html">
-        <div style="font-size:2.2rem;">📚</div>
-        <h3 style="margin:8px 0 4px;">Cursos</h3>
-        <p class="muted" style="margin:0; font-size:.85rem;">Diálogos, podcasts e verbos</p>
-      </a>
-      <a class="card center" href="escrita.html">
-        <div style="font-size:2.2rem;">✍️</div>
-        <h3 style="margin:8px 0 4px;">Escrita</h3>
-        <p class="muted" style="margin:0; font-size:.85rem;">Pratique escrevendo frases</p>
-      </a>
-      <a class="card center" href="musica.html">
-        <div style="font-size:2.2rem;">🎵</div>
-        <h3 style="margin:8px 0 4px;">Música</h3>
-        <p class="muted" style="margin:0; font-size:.85rem;">Aprenda cantando</p>
-      </a>
-      <a class="card center" href="jogo.html">
-        <div style="font-size:2.2rem;">🐍</div>
-        <h3 style="margin:8px 0 4px;">Jogo</h3>
-        <p class="muted" style="margin:0; font-size:.85rem;">Caçando Vocabulário</p>
-      </a>
-      <a class="card center" href="perfil.html">
-        <div style="font-size:2.2rem;">👤</div>
-        <h3 style="margin:8px 0 4px;">Perfil</h3>
-        <p class="muted" style="margin:0; font-size:.85rem;">Suas estatísticas</p>
-      </a>
-    </div>
-  </div>
-
-  <script src="../assets/js/theme.js"></script>
-  <script src="../assets/js/auth.js"></script>
-  <script src="../assets/js/xp.js"></script>
-  <script src="../assets/js/nav.js"></script>
-  <script>
-    Auth.requireLogin();
-    renderNav("dashboard");
-
-    const progress = Progress.load();
-    const levelCode = XPSystem.getCurrentLevel(progress.xp);
-    const level = XP_LEVELS[levelCode];
-
-    document.getElementById("level-badge").textContent = `${level.icon} ${levelCode}`;
-    document.getElementById("level-badge").style.background = `var(${level.color})`;
-    document.getElementById("level-name").textContent = level.name;
-    document.getElementById("creature-desc").textContent = `Seu companheiro: ${level.creature}`;
-    document.getElementById("streak").textContent = progress.streak || 0;
-
-    document.getElementById("xp-current").textContent = `${progress.xp} XP`;
-    document.getElementById("xp-next").textContent =
-      levelCode === "C2" ? "Nível máximo!" : `Faltam ${XPSystem.getXPToNextLevel(progress.xp)} XP para ${XPSystem.getNextLevel(levelCode)}`;
-    document.getElementById("xp-fill").style.width = `${Math.round(XPSystem.getProgressToNextLevel(progress.xp) * 100)}%`;
-  </script>
+  <script>location.replace("../index.html");</script>
+  <p>Redirecionando para <a href="../index.html">o Início</a>...</p>
 </body>
 </html>

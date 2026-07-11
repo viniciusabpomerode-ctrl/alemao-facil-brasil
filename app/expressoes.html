@@ -215,7 +215,7 @@
         try { const r = await fetch("../data/girias.json"); data = await r.json(); }
         catch { const r = await fetch(audioBaseUrl + "data/girias.json"); data = await r.json(); }
         allData = data.expressions || [];
-        allData.slice(0, AFB_FREE_LIMIT).forEach(e => guestFreeIds.add(e.id));
+        allData.slice(0, AFB_FREE_LIMIT_STRICT).forEach(e => guestFreeIds.add(e.id));
         renderMain();
       } catch (e) {
         document.getElementById("cat-grid").innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>Em breve!</h3></div>';
@@ -298,7 +298,7 @@
       document.getElementById("counter-cat").textContent = `${filtradas.length} ${filtradas.length!==1?'expressões':'expressão'}`;
       const lockedHere = isGuest ? filtradas.filter(e => !guestFreeIds.has(e.id)).length : 0;
       document.getElementById("list-cat").innerHTML = (filtradas.length ? renderCards(filtradas) : '<div class="empty-state"><p>Nenhuma encontrada.</p></div>')
-        + (lockedHere > 0 ? Guest.banner(1509 - AFB_FREE_LIMIT, "gírias e expressões") : "");
+        + (lockedHere > 0 ? Guest.banner(1509 - AFB_FREE_LIMIT_STRICT, "gírias e expressões") : "");
     }
 
     function setLevel(lv) { activeLevel = lv; searchCat = ""; document.getElementById("search-cat").value = ""; renderCat(); }
@@ -321,7 +321,7 @@
     function renderCards(lista) {
       return lista.map((e,i) => {
         if (isGuest && !guestFreeIds.has(e.id)) {
-          return Guest.lockedRow(e.german || "", e.portuguese || "");
+          return Guest.lockedRowHidden((catIcons[e.category] || "📁") + " " + (e.category || "") + (e.level ? " · " + e.level : ""));
         }
         return `
         <div class="expr-card" id="expr-${i}" onclick="toggleExpand(${i})">
