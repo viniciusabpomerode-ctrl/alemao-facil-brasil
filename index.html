@@ -8,14 +8,14 @@
   <title>Alemão Fácil Brasil — Seu ambiente de estudo</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
-    .shell { display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
+    .shell { display:grid; grid-template-columns:220px minmax(0,1fr); min-height:100vh; width:100%; }
     .sidebar { background:rgba(var(--overlay-tint),.5); border-right:1px solid var(--border-light); padding:20px 14px; position:sticky; top:0; height:100vh; overflow-y:auto; }
     .sidebar .brand2 { display:flex; align-items:center; gap:8px; font-weight:500; font-size:14px; padding:0 8px 18px; }
     .sidebar h4 { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-secondary); margin:18px 8px 6px; font-weight:500; }
     .sidebar a { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-radius:8px; color:var(--text-secondary); font-size:13px; text-decoration:none; margin-bottom:2px; transition:background .2s,color .2s,transform .2s; }
     .sidebar a:hover { background:rgba(255,255,255,.05); color:var(--text-primary); transform:translateX(2px); }
     .sidebar a small { color:var(--text-secondary); font-size:11px; }
-    .main { padding:20px 28px 60px; min-width:0; max-width:1100px; margin:0 auto; }
+    .main { padding:20px 28px 60px; min-width:0; width:100%; }
     .topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
     .search-box { flex:1; min-width:200px; max-width:420px; position:relative; }
     .search-box input { width:100%; background:var(--card-bg); border:1px solid var(--border-light); color:var(--text-primary); padding:9px 14px; border-radius:10px; font-size:13px; transition:box-shadow .2s,transform .2s; }
