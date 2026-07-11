@@ -149,8 +149,8 @@
   --level-c1: #e0a9c4;
   --level-c2: #9aa0b8;
   --particle-color: rgba(143,157,224,.2);
-  --aurora-1: rgba(143,200,180,.12);
-  --aurora-2: rgba(180,140,220,.10);
+  --aurora-1: rgba(143,210,190,.22);
+  --aurora-2: rgba(180,145,225,.18);
 }
 /* ── Aurora — Noite ── */
 :root[data-theme="aurora"][data-mode="night"] {
@@ -174,8 +174,8 @@
   --success: #5a9680;
   --error: #c06860;
   --particle-color: rgba(143,157,224,.25);
-  --aurora-1: rgba(100,180,160,.18);
-  --aurora-2: rgba(150,120,210,.12);
+  --aurora-1: rgba(110,190,170,.28);
+  --aurora-2: rgba(160,130,220,.20);
 }
 
 /* ── Comuns (não dependem de tema) ── */
@@ -215,7 +215,7 @@ body::before {
 /* ── Aurora boreal (só tema Aurora) ── */
 [data-theme="aurora"] body::after {
   content:"";
-  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.7;
+  position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.85;
   background:
     radial-gradient(ellipse 80% 50% at 30% -10%, var(--aurora-1), transparent 60%),
     radial-gradient(ellipse 60% 70% at 80% 20%, var(--aurora-2), transparent 55%),
