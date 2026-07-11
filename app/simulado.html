@@ -35,8 +35,8 @@
     }
     .q-option:hover { border-color: var(--color-primary); background: var(--brand-light); }
     .q-option.selected { border-color: var(--color-primary); background: var(--brand-light); font-weight: 600; }
-    .q-option.correct { border-color: #4CAF50; background: #E8F5E9; }
-    .q-option.incorrect { border-color: #f44336; background: #FFEBEE; }
+    .q-option.correct { border-color: #4CAF50; background: #E8F5E9; color:#1B5E20; }
+    .q-option.incorrect { border-color: #f44336; background: #FFEBEE; color:#B71C1C; }
     .q-explanation { display: none; margin-top: 12px; padding: 12px; border-radius: 8px; background: #FFF8E1; font-size: .85rem; }
     .q-explanation.show { display: block; }
     .progress-bar { height: 8px; border-radius: 4px; background: var(--border-light); margin-bottom: 24px; }
@@ -63,7 +63,7 @@
     .sections-nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
     .section-tab { padding: 8px 16px; border-radius: 20px; border: 2px solid var(--border-light); cursor: pointer; font-weight: 700; font-size: .85rem; background: var(--card-bg); }
     .section-tab.active { border-color: var(--color-primary); background: var(--brand-light); }
-    .section-tab.done { border-color: #4CAF50; background: #E8F5E9; }
+    .section-tab.done { border-color: #4CAF50; background: #E8F5E9; color:#1B5E20; }
     .q-badge.horen { background: #F3E5F5; color: #7B1FA2; }
     .q-badge.sprechen { background: #E8F5E9; color: #2E7D32; }
   </style>
@@ -198,7 +198,7 @@
             html += `<div style="padding:8px;border-radius:6px;background:var(--bg-secondary);"><strong>Sua resposta:</strong> ${r}</div>`;
             if (revealed) {
               const ok = String(r).toLowerCase().trim() === String(q.resposta).toLowerCase().trim();
-              html += `<div style="padding:8px;border-radius:6px;margin-top:4px;background:${ok?'#E8F5E9':'#FFEBEE'}"><strong>Gabarito:</strong> ${q.resposta}</div>`;
+              html += `<div style="padding:8px;border-radius:6px;margin-top:4px;background:${ok?'#E8F5E9':'#FFEBEE'};color:${ok?'#1B5E20':'#B71C1C'}"><strong>Gabarito:</strong> ${q.resposta}</div>`;
             }
           }
         }
@@ -226,7 +226,7 @@
           } else {
             html += `<div style="padding:8px;border-radius:6px;background:var(--bg-secondary);">🗣️ Você disse: "${r}"</div>`;
             if (revealed && q.resposta) {
-              html += `<div style="padding:8px;border-radius:6px;background:#E8F5E9;margin-top:4px;"><strong>📝 Modelo:</strong> ${q.resposta}</div>`;
+              html += `<div style="padding:8px;border-radius:6px;background:#E8F5E9;color:#1B5E20;margin-top:4px;"><strong>📝 Modelo:</strong> ${q.resposta}</div>`;
             }
           }
         }
