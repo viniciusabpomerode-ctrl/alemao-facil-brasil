@@ -27,6 +27,10 @@
       </div>
       <button class="btn btn-primary btn-block" type="submit">Entrar</button>
     </form>
+    <div style="text-align:center;margin:12px 0;color:var(--text-secondary)">ou</div>
+    <button class="btn btn-outline btn-block" id="google-btn" style="display:flex;align-items:center;justify-content:center;gap:8px">
+      <span style="font-size:1.2rem">G</span> Entrar com Google
+    </button>
     <p class="form-footer">Ainda não tem conta? <a href="cadastro.html"><b>Criar conta grátis</b></a></p>
   </div>
 
@@ -35,22 +39,20 @@
   <script>
     Auth.redirectIfLoggedIn();
 
-    const form = document.getElementById("login-form");
-    const errBox = document.getElementById("err");
-
-    form.addEventListener("submit", async (e) => {
+    document.getElementById("login-form").addEventListener("submit", function(e){
       e.preventDefault();
-      errBox.classList.remove("show");
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+      var err=document.getElementById("err");
+      err.classList.remove("show");
+      Auth.login({email:document.getElementById("email").value,password:document.getElementById("password").value}).then(function(r){
+        if(!r.ok){err.textContent=r.error;err.classList.add("show");return}
+        window.location.href="dashboard.html";
+      });
+    });
 
-      const result = await Auth.login({ email, password });
-      if (!result.ok) {
-        errBox.textContent = result.error;
-        errBox.classList.add("show");
-        return;
-      }
-      window.location.href = "/app/dashboard.html";
+    document.getElementById("google-btn").addEventListener("click", function(){
+      Auth.loginWithGoogle().then(function(r){
+        if(!r.ok){document.getElementById("err").textContent=r.error;document.getElementById("err").classList.add("show")}
+      });
     });
   </script>
 </body>

@@ -54,32 +54,46 @@ const XPSystem = {
   },
 };
 
-// ---------------- Progresso do usuario (por conta) ----------------
+// ---------------- Progresso do usuario (localStorage + R2 sync) ----------------
 
-function afbProgressKey(email) {
-  return `afb_progress_${email}`;
+const PROGRESS_R2 = "https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/progress/";
+const PROGRESS_WORKER = location.hostname === "localhost" ? "http://localhost:8787/progress" : "/.netlify/functions/saved-items";
+
+function progressKey(){
+  var uid = "anon";
+  try { if (typeof Auth !== "undefined" && Auth.currentUser) { var u = Auth.currentUser(); if (u && u.id) uid = u.id } } catch(e) {}
+  if (uid === "anon") uid = localStorage.getItem("afb_fallback_uid") || "anon";
+  return "afb_progress_" + uid;
 }
 
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+function syncProgressToR2(progress){
+  var key = progressKey();
+  localStorage.setItem(key, JSON.stringify(progress));
+  // Tenta salvar no R2 via Worker
+  try {
+    var uid = "anon";
+    try { if (typeof Auth !== "undefined" && Auth.currentUser) { var u = Auth.currentUser(); if (u && u.id) uid = u.id } } catch(e) {}
+    fetch(PROGRESS_WORKER + "/" + encodeURIComponent(uid), {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(progress)
+    }).catch(function(){});
+  } catch(e) {}
+}
+
+function loadProgress(){
+  var key = progressKey();
+  try {
+    var raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { xp: 0, completed: [], streak: 0, lastActivity: null };
 }
 
 const Progress = {
-  load() {
-    const user = Auth.currentUser();
-    if (!user) return { xp: 0, completed: [], streak: 0, lastActivity: null };
-    try {
-      const raw = localStorage.getItem(afbProgressKey(user.email));
-      if (raw) return JSON.parse(raw);
-    } catch {}
-    return { xp: 0, completed: [], streak: 0, lastActivity: null };
-  },
+  load: function(){ return loadProgress(); },
 
-  save(progress) {
-    const user = Auth.currentUser();
-    if (!user) return;
-    localStorage.setItem(afbProgressKey(user.email), JSON.stringify(progress));
-  },
+  save: function(progress){ syncProgressToR2(progress); },
 
   // Registra a conclusao de um item (dialogo/podcast/verbo/musica) e da XP
   // uma unica vez por itemKey (ex: "dialog-9"). Retorna {xpGained, leveledUp}

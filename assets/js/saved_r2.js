@@ -7,10 +7,20 @@ const SavedItems = (() => {
     : "/.netlify/functions/saved-items";
 
   function getUserId() {
+    // Tenta Supabase Auth primeiro
     try {
-      const session = JSON.parse(localStorage.getItem("afb_session") || "{}");
-      return session.email || session.id || "anon";
-    } catch { return "anon"; }
+      if (typeof Auth !== "undefined" && Auth.currentUser) {
+        var u = Auth.currentUser();
+        if (u && u.id) return u.id;
+      }
+    } catch(e) {}
+    // Fallback localStorage
+    try {
+      var s = JSON.parse(localStorage.getItem("afb_session") || "{}");
+      if (s.id) return s.id;
+      if (s.email) return s.email;
+    } catch(e) {}
+    return localStorage.getItem("afb_fallback_uid") || "anon";
   }
 
   function apiUrl() {

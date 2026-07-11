@@ -1,115 +1,112 @@
 // ============================================================
-// Autenticacao 100% local (localStorage do navegador).
-// Isto e um estagio inicial: cada usuario fica salvo so no
-// aparelho/navegador em que se cadastrou. Quando o site for
-// para producao, este arquivo sera trocado por chamadas reais
-// ao Supabase Auth (mesmo backend que o app Flutter ja usa) —
-// as telas continuam iguais, so a implementacao interna muda.
+// Autenticacao via Supabase Auth (email/senha + Google OAuth)
+// Sessao JWT gerenciada pelo Supabase, dados no R2.
 // ============================================================
 
-const AFB_USERS_KEY = "afb_users";
-const AFB_SESSION_KEY = "afb_session";
+const SUPABASE_URL = "https://zqrdpmrwnprtelgloawb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_CVFm1nLMf9GCPr-RKKU6Rw_AFixWd5z";
 const AFB_BASE = location.pathname.includes("/alemao-facil-brasil/") || location.pathname.startsWith("/alemao-facil-brasil") ? "/alemao-facil-brasil" : "";
 
-async function afbHash(text) {
-  const enc = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest("SHA-256", enc);
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+// Carrega Supabase JS dinamicamente
+(function(){
+  var s=document.createElement("script");
+  s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
+  s.onload=function(){window._supabaseReady=true};
+  document.head.appendChild(s);
+})();
+
+function getSupabase(){
+  if(!window._supabaseReady||!window.supabase)return null;
+  if(!window._sb)window._sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  return window._sb;
 }
 
-function afbRandomSalt() {
-  const arr = new Uint8Array(16);
-  crypto.getRandomValues(arr);
-  return Array.from(arr).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function afbLoadUsers() {
-  try {
-    return JSON.parse(localStorage.getItem(AFB_USERS_KEY)) || {};
-  } catch {
-    return {};
-  }
-}
-
-function afbSaveUsers(users) {
-  localStorage.setItem(AFB_USERS_KEY, JSON.stringify(users));
+function getUserId(){
+  var sb=getSupabase();
+  if(!sb)return localStorage.getItem("afb_fallback_uid")||"anon";
+  try{
+    var session=sb.auth.session();
+    return session&&session.user?session.user.id:localStorage.getItem("afb_fallback_uid")||"anon";
+  }catch(e){return localStorage.getItem("afb_fallback_uid")||"anon"}
 }
 
 const Auth = {
-  async signup({ name, email, password }) {
-    email = (email || "").trim().toLowerCase();
-    name = (name || "").trim();
-    if (!name || !email || !password) {
-      return { ok: false, error: "Preencha todos os campos." };
-    }
-    if (password.length < 6) {
-      return { ok: false, error: "A senha precisa ter pelo menos 6 caracteres." };
-    }
-    const users = afbLoadUsers();
-    if (users[email]) {
-      return { ok: false, error: "Já existe uma conta com esse e-mail." };
-    }
-    const salt = afbRandomSalt();
-    const passwordHash = await afbHash(salt + password);
-    users[email] = {
-      name,
-      email,
-      passwordHash,
-      salt,
-      createdAt: new Date().toISOString(),
-    };
-    afbSaveUsers(users);
-    localStorage.setItem(AFB_SESSION_KEY, email);
-    return { ok: true };
+  _ready: function(){
+    return new Promise(function(r){
+      var i=0;
+      var check=function(){if(window._supabaseReady&&window.supabase)r(true);else if(i++<100)setTimeout(check,100);else r(false)};
+      check();
+    });
   },
 
-  async login({ email, password }) {
-    email = (email || "").trim().toLowerCase();
-    const users = afbLoadUsers();
-    const user = users[email];
-    if (!user) {
-      return { ok: false, error: "E-mail ou senha inválidos." };
-    }
-    const hash = await afbHash(user.salt + password);
-    if (hash !== user.passwordHash) {
-      return { ok: false, error: "E-mail ou senha inválidos." };
-    }
-    localStorage.setItem(AFB_SESSION_KEY, email);
-    return { ok: true };
+  signup: async function(opts){
+    await Auth._ready();
+    var sb=getSupabase();
+    if(!sb)return {ok:false,error:"Supabase indisponivel"};
+    try{
+      var r=await sb.auth.signUp({email:opts.email,password:opts.password,options:{data:{name:opts.name}}});
+      if(r.error)return {ok:false,error:r.error.message};
+      localStorage.setItem("afb_fallback_uid",r.data.user.id);
+      return {ok:true};
+    }catch(e){return {ok:false,error:e.message}}
   },
 
-  logout() {
-    localStorage.removeItem(AFB_SESSION_KEY);
-    window.location.href = AFB_BASE + "/index.html";
+  login: async function(opts){
+    await Auth._ready();
+    var sb=getSupabase();
+    if(!sb)return {ok:false,error:"Supabase indisponivel"};
+    try{
+      var r=await sb.auth.signInWithPassword({email:opts.email,password:opts.password});
+      if(r.error)return {ok:false,error:r.error.message};
+      localStorage.setItem("afb_fallback_uid",r.data.user.id);
+      return {ok:true};
+    }catch(e){return {ok:false,error:e.message}}
   },
 
-  currentUser() {
-    const email = localStorage.getItem(AFB_SESSION_KEY);
-    if (!email) return null;
-    const users = afbLoadUsers();
-    return users[email] || null;
+  loginWithGoogle: async function(){
+    await Auth._ready();
+    var sb=getSupabase();
+    if(!sb)return {ok:false,error:"Supabase indisponivel"};
+    try{
+      var r=await sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:location.origin+AFB_BASE+"/app/dashboard.html"}});
+      if(r.error)return {ok:false,error:r.error.message};
+      return {ok:true};
+    }catch(e){return {ok:false,error:e.message}}
   },
 
-  updateCurrentUser(patch) {
-    const email = localStorage.getItem(AFB_SESSION_KEY);
-    if (!email) return;
-    const users = afbLoadUsers();
-    if (!users[email]) return;
-    Object.assign(users[email], patch);
-    afbSaveUsers(users);
+  logout: async function(){
+    var sb=getSupabase();
+    if(sb)try{await sb.auth.signOut()}catch(e){}
+    localStorage.removeItem("afb_fallback_uid");
+    window.location.href=AFB_BASE+"/index.html";
   },
 
-  requireLogin() {
-    if (!Auth.currentUser()) {
-      window.location.href = AFB_BASE + "/app/login.html";
-    }
+  currentUser: function(){
+    var sb=getSupabase();
+    if(!sb)return null;
+    try{
+      var session=sb.auth.session();
+      if(session&&session.user){
+        var u=session.user;
+        return {id:u.id,email:u.email,name:u.user_metadata?u.user_metadata.name:u.email,name:u.user_metadata?u.user_metadata.name||u.email.split("@")[0]:u.email.split("@")[0]};
+      }
+    }catch(e){}
+    return null;
   },
 
-  redirectIfLoggedIn() {
-    if (Auth.currentUser()) {
-      window.location.href = AFB_BASE + "/app/dashboard.html";
-    }
+  updateCurrentUser: function(patch){},
+
+  requireLogin: function(){
+    Auth._ready().then(function(){
+      var u=Auth.currentUser();
+      if(!u)window.location.href=AFB_BASE+"/app/login.html";
+    });
   },
+
+  redirectIfLoggedIn: function(){
+    Auth._ready().then(function(){
+      if(Auth.currentUser())window.location.href=AFB_BASE+"/app/dashboard.html";
+    });
+  }
 };
+

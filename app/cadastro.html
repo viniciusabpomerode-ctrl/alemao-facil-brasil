@@ -43,21 +43,22 @@
   <script src="../assets/js/auth.js"></script>
   <script>
     Auth.redirectIfLoggedIn();
-
-    const form = document.getElementById("signup-form");
-    const errBox = document.getElementById("err");
-
-    function showError(msg) {
-      errBox.textContent = msg;
-      errBox.classList.add("show");
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errBox.classList.remove("show");
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    var form=document.getElementById("signup-form"),err=document.getElementById("err");
+    form.addEventListener("submit", function(e){
+      e.preventDefault();err.classList.remove("show");
+      var name=document.getElementById("name").value;
+      var email=document.getElementById("email").value;
+      var pw=document.getElementById("password").value;
+      var pw2=document.getElementById("password2").value;
+      if(!name||!email||!pw){err.textContent="Preencha todos os campos.";err.classList.add("show");return}
+      if(pw.length<6){err.textContent="Senha precisa ter pelo menos 6 caracteres.";err.classList.add("show");return}
+      if(pw!==pw2){err.textContent="Senhas nao conferem.";err.classList.add("show");return}
+      Auth.signup({name:name,email:email,password:pw}).then(function(r){
+        if(!r.ok){err.textContent=r.error;err.classList.add("show");return}
+        window.location.href="dashboard.html";
+      });
+    });
+  </script>
       const password2 = document.getElementById("password2").value;
 
       if (password !== password2) {
