@@ -128,3 +128,13 @@ var SFX = (function() {
     init: function() { wake(); }
   };
 })();
+
+// ── Auto card-flip: som em qualquer card, link, botao clicado ──
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('.card, .stat-tile, .sidebar a, .quiz-opt, .q-option, a[href]:not([href^="#"]), button:not(#sfx-toggle):not(#daynight-btn)');
+    if (el && !el.closest('#pomo-ring') && !el.closest('#expand-panel')) {
+      SFX.cardFlip();
+    }
+  });
+}
