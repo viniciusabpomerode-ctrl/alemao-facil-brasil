@@ -1,129 +1,130 @@
 /**
  * SFX — Sons de ambiente sintetizados (Web Audio API)
  * Zero arquivos, zero upload. Tudo gerado em tempo real.
- * 
- * Uso:
- *   SFX.cardFlip()   — transicao entre cards (pop suave)
- *   SFX.correct()    — acerto (ding melodioso)
- *   SFX.wrong()      — erro (thud suave)
- *   SFX.xpUp()       — XP subindo (whoosh crescente)
- *   SFX.click()      — clique generico
- *   SFX.toggle()     — ativa/desativa todos os sons
  */
 
 var SFX = (function() {
   var ctx = null;
   var muted = localStorage.getItem('afb_sfx_muted') === '1';
-  var inited = false;
+  var ready = false;
 
-  /** Deve ser chamado no primeiro clique/toque do usuario (politica do navegador) */
-  function init() {
-    if (inited) return;
+  function initCtx() {
+    if (ctx) return ctx;
     try {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
-      if (ctx.state === 'suspended') ctx.resume();
-      inited = true;
-    } catch(e) { ctx = null; }
-  }
-
-  // Auto-init no primeiro clique em qualquer lugar da pagina
-  if (typeof document !== 'undefined') {
-    document.addEventListener('click', init, { once: true });
-    document.addEventListener('touchstart', init, { once: true });
-    document.addEventListener('keydown', init, { once: true });
-  }
-
-  function getCtx() {
-    if (!inited) init();
-    if (!ctx || muted) return null;
-    if (ctx.state === 'suspended') ctx.resume();
+      ready = true;
+    } catch(e) { ctx = null; ready = false; }
     return ctx;
   }
 
-  function tone(freq, type, duration, vol, ramp) {
+  // ── Auto-init no primeiro toque/clique (politica do browser) ──
+  function wake() {
+    var c = initCtx();
+    if (c && c.state === 'suspended') {
+      c.resume().then(function() { ready = true; }).catch(function() {});
+    }
+    ready = true;
+  }
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', wake, { once: true });
+    document.addEventListener('touchstart', wake, { once: true });
+  }
+
+  function getCtx() {
+    if (!ctx) initCtx();
+    if (!ctx || muted) return null;
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(function() {});
+    }
+    return ctx;
+  }
+
+  /** Toca um bip de teste para confirmar que o som funciona */
+  function testBeep() {
     var c = getCtx();
     if (!c) return;
     var t = c.currentTime;
-    var osc = c.createOscillator();
-    var gain = c.createGain();
-    osc.type = type || 'sine';
-    osc.frequency.setValueAtTime(freq, t);
-    gain.gain.setValueAtTime(vol || .08, t);
-    if (ramp) gain.gain.exponentialRampToValueAtTime(.001, t + duration);
-    else gain.gain.setValueAtTime(.001, t + duration);
-    osc.connect(gain);
-    gain.connect(c.destination);
-    osc.start(t);
-    osc.stop(t + duration);
+    var o = c.createOscillator();
+    var g = c.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(660, t);
+    o.frequency.setValueAtTime(880, t + .08);
+    g.gain.setValueAtTime(.18, t);
+    g.gain.exponentialRampToValueAtTime(.001, t + .2);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t + .2);
+  }
+
+  function tone(freq, type, duration, vol) {
+    var c = getCtx();
+    if (!c) return;
+    var t = c.currentTime;
+    var o = c.createOscillator();
+    var g = c.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime((vol || .15) * 0.7, t);
+    g.gain.exponentialRampToValueAtTime(.001, t + duration);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t + duration);
   }
 
   return {
-    /** Ativa/desativa som */
     toggle: function() {
       muted = !muted;
       localStorage.setItem('afb_sfx_muted', muted ? '1' : '0');
+      if (!muted) testBeep(); // beep confirmando som ligado
       return !muted;
     },
     isMuted: function() { return muted; },
+    isReady: function() { return ready && !!ctx; },
 
-    /** Pop suave ao trocar card */
     cardFlip: function() {
-      tone(800, 'sine', .08, .06, true);
-      setTimeout(function() { tone(1000, 'sine', .06, .04, true); }, 30);
+      tone(600, 'sine', .06, .18);
+      setTimeout(function() { tone(900, 'sine', .04, .14); }, 25);
     },
-
-    /** Ding melodioso - acerto */
     correct: function() {
-      tone(880, 'sine', .12, .07, true);
-      setTimeout(function() { tone(1100, 'sine', .1, .06, true); }, 60);
-      setTimeout(function() { tone(1320, 'sine', .15, .05, true); }, 120);
+      tone(880, 'sine', .1, .2);
+      setTimeout(function() { tone(1100, 'sine', .08, .18); }, 55);
+      setTimeout(function() { tone(1320, 'sine', .12, .16); }, 110);
     },
-
-    /** Thud suave - erro */
     wrong: function() {
-      tone(200, 'triangle', .15, .08, true);
-      setTimeout(function() { tone(160, 'triangle', .18, .06, true); }, 50);
+      tone(180, 'triangle', .14, .22);
+      setTimeout(function() { tone(140, 'triangle', .16, .18); }, 45);
     },
-
-    /** Whoosh crescente - XP */
     xpUp: function() {
       var c = getCtx();
       if (!c) return;
       var t = c.currentTime;
-      var osc = c.createOscillator();
-      var gain = c.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(400, t);
-      osc.frequency.exponentialRampToValueAtTime(1200, t + .25);
-      gain.gain.setValueAtTime(.02, t);
-      gain.gain.linearRampToValueAtTime(.06, t + .15);
-      gain.gain.exponentialRampToValueAtTime(.001, t + .35);
-      osc.connect(gain);
-      gain.connect(c.destination);
-      osc.start(t);
-      osc.stop(t + .35);
+      var o = c.createOscillator();
+      var g = c.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(350, t);
+      o.frequency.exponentialRampToValueAtTime(1100, t + .22);
+      g.gain.setValueAtTime(.04, t);
+      g.gain.linearRampToValueAtTime(.12, t + .12);
+      g.gain.exponentialRampToValueAtTime(.001, t + .32);
+      o.connect(g); g.connect(c.destination);
+      o.start(t); o.stop(t + .32);
     },
-
-    /** Clique generico */
     click: function() {
-      tone(600, 'sine', .04, .04, true);
+      tone(500, 'sine', .03, .12);
     },
-
-    /** Som ambiente de fundo (opcional, bem baixinho) - nota longa de ambiente */
     ambientChime: function() {
       var c = getCtx();
       if (!c) return;
       var t = c.currentTime;
-      var osc = c.createOscillator();
-      var gain = c.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(528, t);
-      gain.gain.setValueAtTime(.005, t);
-      gain.gain.exponentialRampToValueAtTime(.001, t + 3);
-      osc.connect(gain);
-      gain.connect(c.destination);
-      osc.start(t);
-      osc.stop(t + 3);
-    }
+      var o = c.createOscillator();
+      var g = c.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(528, t);
+      g.gain.setValueAtTime(.03, t);
+      g.gain.exponentialRampToValueAtTime(.001, t + 2.5);
+      o.connect(g); g.connect(c.destination);
+      o.start(t); o.stop(t + 2.5);
+    },
+
+    /** Forca inicializacao — chame no primeiro clique do usuario */
+    init: function() { wake(); }
   };
 })();
