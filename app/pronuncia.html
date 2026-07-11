@@ -92,18 +92,17 @@ async function buildPool(){
   const pool=[],lvs=st.level==="random"?["A1","A2","B1","B2","C1","C2"]:[st.level];
   const R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
   
-  // Dialogos + Verbos (via AFBData)
+  // Dialogos (frases completas com audio) + Verbos (so frases exemplo)
   for(const lv of lvs){
     try{
       const d=await AFBData.nivel(lv);
-      for(const th of d.dialog_themes||[]){for(const dg of th.dialogs||[]){for(const s of dg.sentences||[]){if(s.audio_url)pool.push({german:s.german_text,portuguese:s.portuguese_translation,level:lv,type:"dialogo",audio:s.audio_url})}}}
+      for(const th of d.dialog_themes||[]){for(const dg of th.dialogs||[]){for(const s of dg.sentences||[]){if(s.audio_url&&s.german_text)pool.push({german:s.german_text,portuguese:s.portuguese_translation,level:lv,type:"dialogo",audio:s.audio_url})}}}
       const verbs=await AFBData.verbos(lv);
       for(const v of verbs){for(const ex of v.examples||[]){
-        // Audio do verbo é da conjugação, não da frase exemplo
-        if(ex.audio_url&&ex.conjugated_verb)pool.push({german:ex.conjugated_verb.replace(/\s*\(.*?\)\s*/g,''),portuguese:(ex.pronoun||"")+" - "+v.base_verb,level:lv,type:"verbo",audio:ex.audio_url});
-        // Frase completa (sem audio individual, bom pra contexto)
-        const sg=ex.example_sentence_german;if(sg)pool.push({german:sg,portuguese:ex.example_sentence_portuguese||"",level:lv,type:"frase",audio:null});
+        const g=ex.example_sentence_german;if(g)pool.push({german:g,portuguese:ex.example_sentence_portuguese||"",level:lv,type:"frase",audio:null});
       }}
+    }catch(e){}
+  }
     }catch(e){}
   }
   // Girias
