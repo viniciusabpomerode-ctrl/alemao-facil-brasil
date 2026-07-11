@@ -21,6 +21,9 @@ function getSupabase(){
   return window._sb;
 }
 
+var _afbSessionCache = null;
+var _afbAuthReadyPromise = null;
+
 function getUserId(){
   var sb=getSupabase();
   if(!sb)return localStorage.getItem("afb_fallback_uid")||"anon";
@@ -32,11 +35,25 @@ function getUserId(){
 
 const Auth = {
   _ready: function(){
-    return new Promise(function(r){
+    if (_afbAuthReadyPromise) return _afbAuthReadyPromise;
+    _afbAuthReadyPromise = new Promise(function(r){
       var i=0;
-      var check=function(){if(window._supabaseReady&&window.supabase)r(true);else if(i++<100)setTimeout(check,100);else r(false)};
+      var check=function(){
+        if(window._supabaseReady&&window.supabase){
+          var sb=getSupabase();
+          if(!sb){r(false);return}
+          if(sb.auth.getSession){
+            sb.auth.getSession().then(function(x){_afbSessionCache=x&&x.data?x.data.session:null;r(true)}).catch(function(){r(true)});
+            if(sb.auth.onAuthStateChange)sb.auth.onAuthStateChange(function(_event,session){_afbSessionCache=session||null});
+          }else{
+            try{_afbSessionCache=sb.auth.session?sb.auth.session():null}catch(e){}
+            r(true);
+          }
+        }else if(i++<100)setTimeout(check,100);else r(false)
+      };
       check();
     });
+    return _afbAuthReadyPromise;
   },
 
   signup: async function(opts){
@@ -47,7 +64,8 @@ const Auth = {
       var r=await sb.auth.signUp({email:opts.email,password:opts.password,options:{data:{name:opts.name}}});
       if(r.error)return {ok:false,error:r.error.message};
       localStorage.setItem("afb_fallback_uid",r.data.user.id);
-      return {ok:true};
+      _afbSessionCache=r.data.session||_afbSessionCache;
+      return {ok:true, session:!!r.data.session};
     }catch(e){return {ok:false,error:e.message}}
   },
 
@@ -59,6 +77,7 @@ const Auth = {
       var r=await sb.auth.signInWithPassword({email:opts.email,password:opts.password});
       if(r.error)return {ok:false,error:r.error.message};
       localStorage.setItem("afb_fallback_uid",r.data.user.id);
+      _afbSessionCache=r.data.session||_afbSessionCache;
       return {ok:true};
     }catch(e){return {ok:false,error:e.message}}
   },
@@ -85,7 +104,7 @@ const Auth = {
     var sb=getSupabase();
     if(!sb)return null;
     try{
-      var session=sb.auth.session();
+      var session=_afbSessionCache||(sb.auth.session?sb.auth.session():null);
       if(session&&session.user){
         var u=session.user;
         return {id:u.id,email:u.email,name:u.user_metadata?u.user_metadata.name:u.email,name:u.user_metadata?u.user_metadata.name||u.email.split("@")[0]:u.email.split("@")[0]};
@@ -95,6 +114,14 @@ const Auth = {
   },
 
   updateCurrentUser: function(patch){},
+
+  accessToken: async function(){
+    await Auth._ready();
+    if(_afbSessionCache&&_afbSessionCache.access_token)return _afbSessionCache.access_token;
+    var sb=getSupabase();
+    if(sb&&sb.auth.getSession){try{var x=await sb.auth.getSession();_afbSessionCache=x.data.session;return _afbSessionCache?_afbSessionCache.access_token:null}catch(e){}}
+    return null;
+  },
 
   requireLogin: function(){
     Auth._ready().then(function(){
