@@ -125,12 +125,20 @@ function show(){
 }
 
 // Play original
-document.getElementById("play-orig-btn").addEventListener("click",()=>{
-  const s=st.sentence;if(!s||!s.audio)return alert("Sem áudio disponível");
+document.getElementById("play-orig-btn").addEventListener("click",async()=>{
+  const s=st.sentence;if(!s||!s.audio)return alert("Sem áudio");
   const R2="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/";
-  const url=s.audio.startsWith("http")?s.audio:R2+s.audio;
-  if(origAudio.src===url&&!origAudio.paused){origAudio.pause();return}
-  origAudio.src=url;origAudio.play().catch(()=>alert("Erro ao tocar áudio"));
+  
+  // Tenta Supabase signed URL (verbos/dialogos), fallback R2 (girias/profissoes)
+  if(typeof AFBData!=="undefined"&&AFBData.signedAudioUrl){
+    try{
+      const url=await AFBData.signedAudioUrl(s.audio);
+      if(url){origAudio.src=url;origAudio.play().catch(()=>{});return}
+    }catch(e){}
+  }
+  // Fallback R2
+  const r2url=s.audio.startsWith("http")?s.audio:R2+s.audio;
+  origAudio.src=r2url;origAudio.play().catch(()=>alert("Erro ao tocar"));
 });
 
 // Record
