@@ -66,6 +66,27 @@ function loadData(){
         }
       }
     }
+    // Carrega dialogos de cada nivel
+    var dpromises=[];
+    for(var k=0;k<lvs.length;k++){
+      (function(lv){
+        dpromises.push(fetch("../data/cursos/"+lv+".json").then(function(r){return r.json()}).then(function(d){
+          var themes=d.dialog_themes||[];
+          for(var a=0;a<themes.length;a++){
+            var dialogs=themes[a].dialogs||[];
+            for(var b=0;b<dialogs.length;b++){
+              var sentences=dialogs[b].sentences||[];
+              for(var c=0;c<sentences.length;c++){
+                var s=sentences[c];
+                if(s.audio_url&&s.german_text)pool.push({german:s.german_text,portuguese:s.portuguese_translation,type:"dialogo",audio:s.audio_url});
+              }
+            }
+          }
+        }).catch(function(){}));
+      })(lvs[k]);
+    }
+    return Promise.all(dpromises);
+  }).then(function(){
     for(var i=pool.length-1;i>0;i--){
       var j=Math.floor(Math.random()*(i+1));
       var tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;

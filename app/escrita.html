@@ -24,7 +24,10 @@ textarea:focus{outline:none;border-color:var(--color-primary)}
 <button class="lvl-btn" data-l="C1">C1</button><button class="lvl-btn" data-l="C2">C2</button>
 </div>
 <div class="card" id="card" style="display:none">
-<div class="german-sentence" id="german"></div>
+<div class="german-sentence">
+<span id="german"></span>
+<span id="playbtn" style="cursor:pointer;opacity:.5;font-size:1rem;margin-left:8px;display:none" title="Ouvir">🔊</span>
+</div>
 <textarea id="input" placeholder="Digite a frase em alemao aqui..."></textarea>
 <div class="trans-box blurred" id="trans" title="Clique para revelar">
 <div style="font-size:.75rem;color:var(--text-secondary);margin-bottom:4px">Clique para ver traducao</div>
@@ -96,6 +99,8 @@ function nextSentence(){
   if(pool.length===0)return;
   current=pool[Math.floor(Math.random()*pool.length)];
   document.getElementById("german").textContent=current.german;
+  var pb=document.getElementById("playbtn");
+  if(current.audio){pb.style.display="inline";pb.onclick=function(){var a=new Audio();var u=current.audio;if(u.indexOf("http")!==0)u="https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev/"+u;a.src=u;a.play();};}else{pb.style.display="none";}
   document.getElementById("input").value="";
   document.getElementById("input").style.borderColor="";
   document.getElementById("transtext").textContent=current.portuguese||"";
