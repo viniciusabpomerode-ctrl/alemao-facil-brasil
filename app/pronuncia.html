@@ -97,16 +97,6 @@ async function buildPool(){
   document.getElementById("pool-count").textContent=pool.length.toLocaleString();
   if(pool.length){document.getElementById("practice-area").style.display="";show()}
 }
-      }}
-    }catch(e){}
-  }
-    }catch(e){}
-  }
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-  st.pool=pool;
-  document.getElementById("pool-count").textContent=pool.length.toLocaleString();
-  if(pool.length){document.getElementById("practice-area").style.display="";show()}
-}
 
 function show(){
   const withAudio=st.pool.filter(p=>p.audio);
