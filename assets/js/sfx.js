@@ -14,14 +14,30 @@
 var SFX = (function() {
   var ctx = null;
   var muted = localStorage.getItem('afb_sfx_muted') === '1';
+  var inited = false;
+
+  /** Deve ser chamado no primeiro clique/toque do usuario (politica do navegador) */
+  function init() {
+    if (inited) return;
+    try {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+      inited = true;
+    } catch(e) { ctx = null; }
+  }
+
+  // Auto-init no primeiro clique em qualquer lugar da pagina
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', init, { once: true });
+    document.addEventListener('touchstart', init, { once: true });
+    document.addEventListener('keydown', init, { once: true });
+  }
 
   function getCtx() {
-    if (!ctx) {
-      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); }
-      catch(e) { return null; }
-    }
+    if (!inited) init();
+    if (!ctx || muted) return null;
     if (ctx.state === 'suspended') ctx.resume();
-    return muted ? null : ctx;
+    return ctx;
   }
 
   function tone(freq, type, duration, vol, ramp) {

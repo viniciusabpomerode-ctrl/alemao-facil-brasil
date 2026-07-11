@@ -35,11 +35,11 @@
       cursor:pointer; align-items:center; justify-content:center; }
     .sb-overlay { display:none; position:fixed; inset:0; z-index:39; background:rgba(0,0,0,.45);
       backdrop-filter:blur(2px); }
-    .sidebar .brand2 { display:flex; align-items:center; gap:8px; font-weight:600; font-size:1rem; padding:0 8px 20px; letter-spacing:-.02em; }
-    .sidebar h4 { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-secondary); margin:18px 8px 6px; font-weight:600; opacity:.7; }
-    .sidebar a { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 10px; border-radius:9px; color:var(--text-secondary); font-size:.82rem; text-decoration:none; margin-bottom:1px; transition:background .2s,color .2s,transform .2s; }
-    .sidebar a:hover { background:rgba(255,255,255,.05); color:var(--text-primary); transform:translateX(2px); }
-    .sidebar a small { color:var(--text-secondary); font-size:.68rem; opacity:.7; }
+    .sidebar .brand2 { display:flex; align-items:center; gap:8px; font-weight:700; font-size:1.05rem; padding:0 8px 20px; letter-spacing:-.02em; }
+    .sidebar h4 { font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--text-secondary); margin:18px 8px 6px; font-weight:600; opacity:.7; }
+    .sidebar a { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 10px; border-radius:9px; color:var(--text-secondary); font-size:.88rem; text-decoration:none; margin-bottom:1px; transition:background .2s,color .2s,transform .2s; }
+    .sidebar a:hover { background:var(--card-hover); color:var(--text-primary); transform:translateX(2px); }
+    .sidebar a small { color:var(--text-secondary); font-size:.72rem; opacity:.7; }
 
     /* ── Main content area ── */
     .main { padding:24px 24px 70px; min-width:0; overflow:hidden; }
@@ -61,11 +61,12 @@
     .hero-fx { height:50px; margin:-24px -24px 8px; pointer-events:none; }
 
     /* ── Greeting ── */
-    .greeting h1 { font-size:clamp(1.1rem,1.8vw,1.4rem); font-weight:500; margin:0 0 2px; letter-spacing:-.03em; }
-    .greeting p { color:var(--text-secondary); font-size:.82rem; margin:0 0 16px; }
+    .greeting h1 { font-size:clamp(1.3rem,2vw,1.7rem); font-weight:600; margin:0 0 4px; letter-spacing:-.03em; }
+    .greeting p { color:var(--text-secondary); font-size:.9rem; margin:0 0 18px; }
 
     /* ── Quick actions ── */
-    .quick-row { display:flex; gap:10px; margin:0 0 18px; flex-wrap:wrap; }
+    .quick-row { display:flex; gap:10px; margin:0 0 20px; flex-wrap:wrap; }
+    .quick-row .btn { font-size:.92rem; padding:13px 26px; }
 
     /* ── Focus row: LoFi + Pomodoro side by side ── */
     .foco-row { display:grid; grid-template-columns:1.3fr 1fr; gap:12px; margin-bottom:24px; }
@@ -91,23 +92,24 @@
 
     /* ── Study tiles grid ── */
     .study-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-    .stat-tile { padding:16px 12px; text-align:center; border-radius:14px; transition:transform .2s,box-shadow .2s; }
+    .stat-tile { padding:18px 14px; text-align:center; border-radius:14px; transition:transform .2s,box-shadow .2s; }
     .stat-tile:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.2); }
-    .stat-tile .ico { font-size:1.2rem; margin-bottom:6px; }
-    .stat-tile b { display:block; font-size:1.25rem; font-weight:600; letter-spacing:-.02em; }
-    .stat-tile span { display:block; font-size:.68rem; color:var(--text-secondary); margin-top:2px; }
+    .stat-tile .ico { font-size:1.5rem; margin-bottom:6px; }
+    .stat-tile b { display:block; font-size:1.6rem; font-weight:700; letter-spacing:-.02em; line-height:1.2; }
+    .stat-tile span { display:block; font-size:.8rem; color:var(--text-primary); font-weight:500; margin-top:2px; }
+    .stat-tile small { display:block; font-size:.68rem; color:var(--text-secondary); margin-top:2px; font-weight:400; }
 
     /* ── Progress bar ── */
-    .progress-strip { margin-top:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; padding:16px 20px; border-radius:14px; }
-    .progress-strip .stats { display:flex; gap:28px; flex-wrap:wrap; }
-    .progress-strip .stat-item b { font-size:1.05rem; font-weight:600; }
-    .progress-strip .stat-item span { display:block; font-size:.65rem; color:var(--text-secondary); }
+    .progress-strip { margin-top:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; padding:18px 22px; border-radius:14px; }
+    .progress-strip .stats { display:flex; gap:32px; flex-wrap:wrap; }
+    .progress-strip .stat-item b { font-size:1.2rem; font-weight:700; }
+    .progress-strip .stat-item span { display:block; font-size:.7rem; color:var(--text-secondary); }
 
     /* ── Plans teaser ── */
-    .plans-teaser { margin-top:16px; padding:16px 20px; border:1px dashed var(--border-light); border-radius:14px;
+    .plans-teaser { margin-top:16px; padding:16px 22px; border:1px dashed var(--border-light); border-radius:14px;
       display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
-    .plans-teaser b { font-size:.85rem; }
-    .plans-teaser .muted { font-size:.7rem; margin:2px 0 0; }
+    .plans-teaser b { font-size:.9rem; }
+    .plans-teaser .muted { font-size:.75rem; margin:2px 0 0; }
 
     /* ═══════════════════════════════════════════
        RESPONSIVE BREAKPOINTS
