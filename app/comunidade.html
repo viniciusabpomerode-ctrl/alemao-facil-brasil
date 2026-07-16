@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comunidade WhatsApp — DeutschBloom</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    body { min-height:100vh; background:var(--bg-primary); color:var(--text-primary); }
+    .community-page { min-height:100vh; display:grid; place-items:center; padding:clamp(20px,5vw,64px); position:relative; overflow:hidden; }
+    .community-page::before,.community-page::after { content:""; position:absolute; border-radius:50%; filter:blur(8px); pointer-events:none; }
+    .community-page::before { width:520px; height:520px; right:-210px; top:-230px; background:rgba(37,211,102,.13); }
+    .community-page::after { width:360px; height:360px; left:-180px; bottom:-190px; background:rgba(37,211,102,.08); }
+    .community-wrap { width:min(920px,100%); position:relative; z-index:1; }
+    .back-link { display:inline-flex; align-items:center; gap:8px; margin-bottom:20px; color:var(--text-secondary); text-decoration:none; font-size:.88rem; }
+    .back-link:hover { color:var(--text-primary); }
+    .community-card { padding:clamp(28px,6vw,62px); border:1px solid rgba(37,211,102,.32); border-radius:28px; background:linear-gradient(135deg,rgba(37,211,102,.15),var(--card-bg) 48%,rgba(37,211,102,.06)); box-shadow:0 28px 80px rgba(0,0,0,.24); text-align:center; }
+    .community-icon { width:82px; height:82px; display:grid; place-items:center; margin:0 auto 22px; border-radius:25px; color:#fff; background:linear-gradient(145deg,#2fe276,#18a94e); box-shadow:0 18px 42px rgba(37,211,102,.28); font-size:2.3rem; }
+    .eyebrow { display:block; color:#25d366; font-size:.76rem; font-weight:800; text-transform:uppercase; letter-spacing:.18em; }
+    h1 { margin:10px auto 14px; max-width:720px; font-size:clamp(2rem,5vw,3.8rem); line-height:1.05; letter-spacing:-.055em; }
+    .lead { max-width:680px; margin:0 auto; color:var(--text-secondary); font-size:clamp(.98rem,2vw,1.12rem); line-height:1.7; }
+    .community-tags { display:flex; justify-content:center; gap:9px; flex-wrap:wrap; margin:25px 0 30px; }
+    .community-tags span { padding:8px 12px; border:1px solid rgba(37,211,102,.25); border-radius:999px; background:rgba(37,211,102,.08); font-size:.79rem; }
+    .join-button { display:inline-flex; align-items:center; justify-content:center; min-width:min(330px,100%); padding:15px 25px; border-radius:13px; color:#062a15; background:#25d366; text-decoration:none; font-weight:800; box-shadow:0 14px 34px rgba(37,211,102,.25); transition:transform .2s,background .2s; }
+    .join-button:hover { transform:translateY(-2px); background:#31e477; }
+    .privacy { margin:18px 0 0; color:var(--text-secondary); font-size:.75rem; opacity:.78; }
+    @media (max-width:600px) { .community-page { padding:18px; } .community-card { border-radius:22px; } .community-icon { width:68px; height:68px; border-radius:20px; font-size:1.9rem; } }
+  </style>
+</head>
+<body>
+  <main class="community-page">
+    <div class="community-wrap">
+      <a class="back-link" href="../index.html">← Início</a>
+      <section class="community-card" aria-labelledby="community-title">
+        <div class="community-icon" aria-hidden="true">💬</div>
+        <span class="eyebrow">Comunidade DeutschBloom</span>
+        <h1 id="community-title">Pratique alemão com outras pessoas</h1>
+        <p class="lead">Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.</p>
+        <div class="community-tags"><span>✓ Conversas respeitosas</span><span>✓ Ajuda entre estudantes</span><span>✓ Participação gratuita</span></div>
+        <a class="join-button" href="https://chat.whatsapp.com/EdGGxBeefGvCp6r7tMGD7F" target="_blank" rel="noopener noreferrer">Entrar no grupo ↗</a>
+        <p class="privacy">Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.</p>
+      </section>
+    </div>
+  </main>
+  <script src="../assets/js/i18n.js"></script>
+  <script src="../assets/js/theme.js"></script>
+</body>
+</html>

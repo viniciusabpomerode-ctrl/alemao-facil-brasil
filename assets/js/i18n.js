@@ -9,18 +9,119 @@ const AppLanguage = {
   fr: { code: "fr", name: "Français", flag: "🇫🇷" },
   it: { code: "it", name: "Italiano", flag: "🇮🇹" },
   tr: { code: "tr", name: "Türkçe", flag: "🇹🇷" },
+  pl: { code: "pl", name: "Polski", flag: "🇵🇱" },
+  hi: { code: "hi", name: "हिन्दी", flag: "🇮🇳" },
+  he: { code: "he", name: "עברית", flag: "🇮🇱", rtl: true },
+  ar: { code: "ar", name: "العربية", flag: "🇸🇦", rtl: true },
 };
 
 const AFB_LANG_KEY = "afb_language";
+const AFB_LANG_SOURCE_KEY = "afb_language_source";
+
+const AFB_COUNTRY_LANGUAGE = {
+  BR: "pt", PT: "pt", AO: "pt", MZ: "pt", CV: "pt", GW: "pt", ST: "pt", TL: "pt",
+  US: "en", GB: "en", CA: "en", AU: "en", NZ: "en", IE: "en",
+  ES: "es", MX: "es", AR: "es", CO: "es", CL: "es", PE: "es", VE: "es",
+  EC: "es", BO: "es", PY: "es", UY: "es", CR: "es", PA: "es", GT: "es",
+  HN: "es", SV: "es", NI: "es", DO: "es", CU: "es",
+  FR: "fr", MC: "fr", IT: "it", SM: "it", VA: "it", TR: "tr", PL: "pl",
+  IL: "he", IN: "hi",
+  SA: "ar", AE: "ar", QA: "ar", KW: "ar", BH: "ar", OM: "ar", YE: "ar",
+  EG: "ar", JO: "ar", LB: "ar", IQ: "ar", SY: "ar", MA: "ar", DZ: "ar",
+  TN: "ar", LY: "ar", SD: "ar"
+};
+
+const AFB_COMMUNITY_TRANSLATIONS = {
+  en: {"Comunidade DeutschBloom":"DeutschBloom Community","Pratique alemão com outras pessoas":"Practice German with other learners","Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.":"Join our WhatsApp group to ask questions, share your progress, and stay consistent with your studies.","✓ Conversas respeitosas":"✓ Respectful conversations","✓ Ajuda entre estudantes":"✓ Help between learners","✓ Participação gratuita":"✓ Free to join","Entrar no grupo ↗":"Join the group ↗"},
+  es: {"Comunidade DeutschBloom":"Comunidad DeutschBloom","Pratique alemão com outras pessoas":"Practica alemán con otras personas","Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.":"Únete a nuestro grupo de WhatsApp para resolver dudas, compartir tu progreso y mantener la constancia en tus estudios.","✓ Conversas respeitosas":"✓ Conversaciones respetuosas","✓ Ajuda entre estudantes":"✓ Ayuda entre estudiantes","✓ Participação gratuita":"✓ Participación gratuita","Entrar no grupo ↗":"Entrar al grupo ↗"},
+  fr: {"Comunidade DeutschBloom":"Communauté DeutschBloom","Pratique alemão com outras pessoas":"Pratiquez l’allemand avec d’autres personnes","Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.":"Rejoignez notre groupe WhatsApp pour poser vos questions, partager vos progrès et étudier avec régularité.","✓ Conversas respeitosas":"✓ Échanges respectueux","✓ Ajuda entre estudantes":"✓ Entraide entre apprenants","✓ Participação gratuita":"✓ Participation gratuite","Entrar no grupo ↗":"Rejoindre le groupe ↗"},
+  it: {"Comunidade DeutschBloom":"Community DeutschBloom","Pratique alemão com outras pessoas":"Pratica il tedesco con altre persone","Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.":"Entra nel nostro gruppo WhatsApp per fare domande, condividere i progressi e studiare con costanza.","✓ Conversas respeitosas":"✓ Conversazioni rispettose","✓ Ajuda entre estudantes":"✓ Aiuto tra studenti","✓ Participação gratuita":"✓ Partecipazione gratuita","Entrar no grupo ↗":"Entra nel gruppo ↗"},
+  tr: {"Comunidade DeutschBloom":"DeutschBloom Topluluğu","Pratique alemão com outras pessoas":"Başkalarıyla Almanca pratik yapın","Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.":"Sorularınızı paylaşmak, ilerlemenizi göstermek ve düzenli çalışmak için WhatsApp grubumuza katılın.","✓ Conversas respeitosas":"✓ Saygılı sohbetler","✓ Ajuda entre estudantes":"✓ Öğrenciler arası yardım","✓ Participação gratuita":"✓ Ücretsiz katılım","Entrar no grupo ↗":"Gruba katıl ↗"},
+  pl: {"Comunidade DeutschBloom":"Społeczność DeutschBloom","Pratique alemão com outras pessoas":"Ćwicz niemiecki z innymi osobami","Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.":"Dołącz do naszej grupy WhatsApp, aby zadawać pytania, dzielić się postępami i uczyć się regularnie.","✓ Conversas respeitosas":"✓ Kulturalne rozmowy","✓ Ajuda entre estudantes":"✓ Pomoc między uczniami","✓ Participação gratuita":"✓ Bezpłatny udział","Entrar no grupo ↗":"Dołącz do grupy ↗"},
+  hi: {"Comunidade DeutschBloom":"DeutschBloom समुदाय","Pratique alemão com outras pessoas":"दूसरे लोगों के साथ जर्मन का अभ्यास करें","Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.":"सवाल पूछने, अपनी प्रगति साझा करने और नियमित पढ़ाई बनाए रखने के लिए हमारे WhatsApp समूह से जुड़ें।","✓ Conversas respeitosas":"✓ सम्मानजनक बातचीत","✓ Ajuda entre estudantes":"✓ विद्यार्थियों के बीच सहायता","✓ Participação gratuita":"✓ निःशुल्क भागीदारी","Entrar no grupo ↗":"समूह से जुड़ें ↗"},
+  he: {"Comunidade DeutschBloom":"קהילת DeutschBloom","Pratique alemão com outras pessoas":"תרגלו גרמנית עם אנשים נוספים","Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.":"הצטרפו לקבוצת ה-WhatsApp שלנו כדי לשאול שאלות, לשתף התקדמות ולהתמיד בלימודים.","✓ Conversas respeitosas":"✓ שיחות מכבדות","✓ Ajuda entre estudantes":"✓ עזרה בין לומדים","✓ Participação gratuita":"✓ ההשתתפות בחינם","Entrar no grupo ↗":"הצטרפות לקבוצה ↗"},
+  ar: {"Comunidade DeutschBloom":"مجتمع DeutschBloom","Pratique alemão com outras pessoas":"تدرّب على الألمانية مع الآخرين","Entre no nosso grupo do WhatsApp para trocar dúvidas, compartilhar progresso e manter a constância nos estudos.":"انضم إلى مجموعتنا على WhatsApp لطرح الأسئلة ومشاركة تقدمك والحفاظ على الانتظام في الدراسة.","✓ Conversas respeitosas":"✓ محادثات محترمة","✓ Ajuda entre estudantes":"✓ مساعدة بين المتعلمين","✓ Participação gratuita":"✓ مشاركة مجانية","Entrar no grupo ↗":"انضم إلى المجموعة ↗"}
+};
+
+const AFB_COMMUNITY_PAGE_TRANSLATIONS = {
+  en: {"Comunidade WhatsApp":"WhatsApp Community","Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.":"When you join, your WhatsApp name and phone number will be visible to group members."},
+  es: {"Comunidade WhatsApp":"Comunidad de WhatsApp","Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.":"Al unirte, tu nombre y número de WhatsApp serán visibles para los miembros del grupo."},
+  fr: {"Comunidade WhatsApp":"Communauté WhatsApp","Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.":"En rejoignant le groupe, votre nom et votre numéro WhatsApp seront visibles par ses membres."},
+  it: {"Comunidade WhatsApp":"Community WhatsApp","Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.":"Entrando, il tuo nome e numero WhatsApp saranno visibili ai membri del gruppo."},
+  tr: {"Comunidade WhatsApp":"WhatsApp Topluluğu","Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.":"Katıldığınızda WhatsApp adınız ve telefon numaranız grup üyeleri tarafından görülebilir."},
+  pl: {"Comunidade WhatsApp":"Społeczność WhatsApp","Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.":"Po dołączeniu Twoja nazwa i numer WhatsApp będą widoczne dla członków grupy."},
+  hi: {"Comunidade WhatsApp":"WhatsApp समुदाय","Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.":"जुड़ने पर आपका WhatsApp नाम और फ़ोन नंबर समूह के सदस्यों को दिखाई देगा।"},
+  he: {"Comunidade WhatsApp":"קהילת WhatsApp","Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.":"לאחר ההצטרפות, השם ומספר הטלפון שלך ב-WhatsApp יהיו גלויים לחברי הקבוצה."},
+  ar: {"Comunidade WhatsApp":"مجتمع WhatsApp","Ao entrar, seu número e nome do WhatsApp ficarão visíveis para os participantes do grupo.":"عند الانضمام، سيظهر اسمك ورقم هاتفك على WhatsApp لأعضاء المجموعة."}
+};
 
 const I18n = {
   _current: "pt",
   _listeners: [],
+  _localeMap: null,
+  _localeMapLanguage: null,
+  _contentOverrides: {
+    en: { "A) Eu tenho 20 anos": "A) I am 20 years old" },
+    es: { "A) Eu tenho 20 anos": "A) Tengo 20 años" },
+    fr: { "A) Eu tenho 20 anos": "A) J’ai 20 ans" },
+    it: { "A) Eu tenho 20 anos": "A) Ho 20 anni" },
+    tr: { "A) Eu tenho 20 anos": "A) 20 yaşındayım" },
+    pl: { "A) Eu tenho 20 anos": "A) Mam 20 lat" },
+    hi: { "A) Eu tenho 20 anos": "A) मेरी उम्र 20 साल है" },
+    he: { "A) Eu tenho 20 anos": "A) אני בן/בת 20" },
+    ar: { "A) Eu tenho 20 anos": "A) عمري 20 سنة" },
+  },
 
   // ── Inicialização ──
   init() {
+    const requested = new URLSearchParams(location.search).get("lang");
     const saved = localStorage.getItem(AFB_LANG_KEY);
-    this._current = saved && AppLanguage[saved] ? saved : "pt";
+    const source = localStorage.getItem(AFB_LANG_SOURCE_KEY);
+
+    if (requested && AppLanguage[requested]) {
+      this._current = requested;
+      localStorage.setItem(AFB_LANG_KEY, requested);
+      localStorage.setItem(AFB_LANG_SOURCE_KEY, "user");
+      return;
+    }
+    if (saved && AppLanguage[saved]) {
+      this._current = saved;
+      if (!source) localStorage.setItem(AFB_LANG_SOURCE_KEY, "user");
+      return;
+    }
+
+    this._current = this._browserLanguage();
+    this._detectRegion();
+  },
+
+  _browserLanguage() {
+    const candidates = Array.isArray(navigator.languages) && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || ""];
+    for (const locale of candidates) {
+      const code = String(locale).toLowerCase().split("-")[0];
+      if (AppLanguage[code]) return code;
+    }
+    return "en";
+  },
+
+  async _detectRegion() {
+    if (localStorage.getItem(AFB_LANG_SOURCE_KEY) === "user") return;
+    let detected = this._browserLanguage();
+    try {
+      const response = await fetch("/api/geo", { cache: "no-store" });
+      if (response.ok) {
+        const payload = await response.json();
+        const country = String(payload.country || "").toUpperCase();
+        detected = AFB_COUNTRY_LANGUAGE[country] || detected;
+        if (country) localStorage.setItem("afb_country", country);
+      }
+    } catch (_) {}
+
+    if (localStorage.getItem(AFB_LANG_SOURCE_KEY) === "user") return;
+    localStorage.setItem(AFB_LANG_KEY, detected);
+    localStorage.setItem(AFB_LANG_SOURCE_KEY, "auto");
+    if (detected !== this._current) location.reload();
   },
 
   getCurrent() {
@@ -40,6 +141,7 @@ const I18n = {
     if (!AppLanguage[code]) return;
     this._current = code;
     localStorage.setItem(AFB_LANG_KEY, code);
+    localStorage.setItem(AFB_LANG_SOURCE_KEY, "user");
     // Notifica listeners (para recarregar UI)
     this._listeners.forEach(fn => fn(code));
     // Recarrega a página para aplicar novo idioma
@@ -48,6 +150,82 @@ const I18n = {
 
   onChange(fn) {
     this._listeners.push(fn);
+  },
+
+  async loadContentMap() {
+    const lang = this._current;
+    if (lang === "pt") return {};
+    if (this._localeMap && this._localeMapLanguage === lang) return this._localeMap;
+    const r2Base = typeof AFB_R2_PUBLIC_URL !== "undefined"
+      ? AFB_R2_PUBLIC_URL
+      : "https://pub-d856fe7eb96043c3a93a4d72cd8317cc.r2.dev";
+    for (const url of [`${r2Base}/data/${lang}.json`, `../locale_maps/${lang}.json`, `/locale_maps/${lang}.json`]) {
+      try {
+        const response = await fetch(url, { cache: "no-cache" });
+        if (!response.ok) continue;
+        const payload = await response.json();
+        this._localeMap = payload.translations || {};
+        this._localeMapLanguage = lang;
+        return this._localeMap;
+      } catch (_) {}
+    }
+    this._localeMap = {};
+    this._localeMapLanguage = lang;
+    return this._localeMap;
+  },
+
+  content(text) {
+    if (text === undefined || text === null || text === "" || this._current === "pt") return text || "";
+    const overrides = this._contentOverrides[this._current] || {};
+    const community = AFB_COMMUNITY_TRANSLATIONS[this._current] || {};
+    const communityPage = AFB_COMMUNITY_PAGE_TRANSLATIONS[this._current] || {};
+    return communityPage[text] || community[text] || overrides[text] || (this._localeMap && this._localeMap[text]) || text;
+  },
+
+  async applyPageTranslations(root = document.body) {
+    const lang = this._current;
+    document.documentElement.lang = {
+      pt: "pt-BR", en: "en-US", es: "es-ES", fr: "fr-FR", it: "it-IT",
+      tr: "tr-TR", pl: "pl-PL", hi: "hi-IN", he: "he-IL", ar: "ar-SA"
+    }[lang] || lang;
+    document.documentElement.dir = AppLanguage[lang]?.rtl ? "rtl" : "ltr";
+    if (lang === "pt" || !root) return;
+
+    await this.loadContentMap();
+    const translate = value => {
+      const compact = String(value || "").replace(/\s+/g, " ").trim();
+      if (!compact) return value;
+      const translated = this.content(compact);
+      if (translated === compact) return value;
+      const before = String(value).match(/^\s*/)?.[0] || "";
+      const after = String(value).match(/\s*$/)?.[0] || "";
+      return before + translated + after;
+    };
+    const apply = node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const parent = node.parentElement;
+        if (parent?.closest?.('[lang="de"],.sentence-de,.german,.phrase-de,.german-text,.german-word,[data-no-translate]')) return;
+        const value = translate(node.nodeValue);
+        if (value !== node.nodeValue) node.nodeValue = value;
+        return;
+      }
+      if (node.nodeType !== Node.ELEMENT_NODE || ["SCRIPT", "STYLE", "CODE"].includes(node.tagName)) return;
+      ["placeholder", "title", "aria-label"].forEach(attribute => {
+        const value = node.getAttribute(attribute);
+        if (!value) return;
+        const translated = translate(value);
+        if (translated !== value) node.setAttribute(attribute, translated);
+      });
+      if (node.tagName !== "TEXTAREA") node.childNodes.forEach(apply);
+    };
+    apply(root);
+    document.title = translate(document.title);
+    if (!this._translationObserver) {
+      this._translationObserver = new MutationObserver(changes => {
+        changes.forEach(change => change.addedNodes.forEach(apply));
+      });
+      this._translationObserver.observe(root, { childList: true, subtree: true });
+    }
   },
 
   // ── Campo dinâmico com suporte a _{lang} ──
@@ -86,7 +264,7 @@ const I18n = {
       close: "Fechar",
       back: "Voltar",
       // App
-      app_title: "Alemão Fácil Brasil",
+      app_title: "DeutschBloom",
       home: "Início",
       dialogs: "Diálogos",
       podcasts: "Podcasts",
@@ -457,8 +635,7 @@ const I18n = {
 
   // ── Obter tradução ──
   t(key, params = {}) {
-    const lang = this._strings[this._current];
-    if (!lang) return key;
+    const lang = this._strings[this._current] || this._strings.pt;
     let text = lang[key];
     if (!text) {
       // Fallback para português
@@ -479,3 +656,8 @@ const I18n = {
 
 // Inicializa
 I18n.init();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => I18n.applyPageTranslations());
+} else {
+  I18n.applyPageTranslations();
+}
